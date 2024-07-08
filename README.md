@@ -13,9 +13,13 @@ It shows:
 
 If you are only a user:
 
+- A recommendation button that can be pressed once and only **connected to an account**
 - a link to the **blog post feed**
 - a link to the **news feed**
 - a link to your **recommendations**
+- a link to **create an account (username and strong password required) **
+- a link to **SignIn**
+- a link to **SignOut**
 
 More if you are the administrator:
 
