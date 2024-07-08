@@ -1,6 +1,6 @@
 # flask_blog
 
-A personnal blog website built in with the Flask Framework.
+A personnal blog website built with the Flask Framework.
 
 ## WebPages Architecture
 
