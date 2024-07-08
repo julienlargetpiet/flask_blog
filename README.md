@@ -2,6 +2,8 @@
 
 A personnal blog website built with the Flask Framework.
 
+Example: https://julienlargetpiet.xyz
+
 ## WebPages Architecture
 
 ### Home webpage
