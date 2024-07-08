@@ -62,8 +62,11 @@ It is a webpage where you can add you recommendations in term of websites. It sh
 
 ## Features
 
-The comments oes not support any html tags apart from &ltbr/&gt and the markdown tags for bold and italic characters.
+The comments does not support any html tags apart from &ltbr/&gt and the markdown tags for bold and italic characters.
 While the description and post (news and blog) fuly support all html, even local files link with the following path `../../static/files/filename`
+
+The comments are ditable by the user who posted it.
+The comments can be removed by the administrator.
 
 # Production Server
 
