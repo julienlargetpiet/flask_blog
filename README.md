@@ -36,10 +36,11 @@ Same as the post feed but for your news.
 ### Blog Post
 
 It is a webpage where a post is, comments are allowed but you can turn it off. (Responses to comments are possible)
+Posts are editable and it will be notifiable by anyone. Posts support html / markdown / local files links (see following)
 
 ### News post
 
-It is a webpage where a news post is, comments are not possible on the news post, but you can edit a news (which will be notifiable by anyone).
+It is a webpage where a news post is, comments are not possible on the news post, but you can edit a news (which will be notifiable by anyone). News support html / markdown / local files links (see following)
 
 ### Add Post
 
