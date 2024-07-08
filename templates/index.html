@@ -1,0 +1,44 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Index </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+    <center>
+            <img src = "{{url_for('static', filename = 'profile/profile.jpg')}}" alt = "Profile Picture" width = "170" height = "220" style= "margin-top: 2cm">
+            <div style = "margin-top: .5cm"> <a id = "hmn"> {{ recommends }} </a> recommendations </div>
+            {% if show_result == True %}
+                <form method = "post" action="" id = "todo-form">
+                        <div id = "button"> <input type = "submit" value = "Submit"> </div>
+                </form>
+            {% endif %}
+            <hr class = "line">
+            <div style = "margin-top: .5cm; margin-bottom: .5cm"> {{description|safe}} </div>
+            <hr class = "line">
+            {% if user_co %}
+            <br/>
+            <p>Welcome <b>{{ user_co }}</b></p>
+            <br/>
+            {% endif %}
+            <div style = "margin-bottom: 1cm"><a href = "post_search/0">Blog Feed</a> &nbsp&nbsp 
+            <a href = "news_search/0">News Feed</a> &nbsp&nbsp
+            <a href = "recommendations_websites">Recommendations Websites</a>
+            </div>
+            <a href = "signin">SignIn</a> &nbsp&nbsp
+            <a href = "new_user">Create Account</a>
+            <a href = "signout">Go for SignOut</a>
+            <br/>
+            {% if auth %}
+                <br/>
+                <a href = "new_post">New Post</a> <br/>
+                <a href = "new_news_post">New news Post</a> <br/>
+                <a href = "admin_panel">Admin Panel</a> <br/>
+                <a href = "add_recom">Add Recommendations</a>
+            {% endif %}
+    </center>
+</body>

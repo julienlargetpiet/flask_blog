@@ -1,0 +1,27 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> SignIn </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+        <a href = "../">Home</a>
+        <br/>
+        <center>
+                <form method = "post" style = "margin-top: 5cm">
+                        <div style = "margin-top: .5cm"> {{ form.hidden_tag() }} </div>
+                        <div style = "margin-top: .5cm"> {{ form.username }} </div>
+                        <div style = "margin-top: .5cm"> {{ form.password }} </div>
+                        {% if form.username.errors %}
+                                {% for error in form.username.errors %}
+                                        {{ error }}
+                                {% endfor %}
+                        {% endif %}
+                        <div style = "margin-top: .5cm"> {{ form.submit }} </div>
+                </form>
+        </center>
+</body>

@@ -1,0 +1,25 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Get User Ip </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+<body>
+        <a href = "../../admin_panel">Previous</a>
+        <br/>
+        <center>
+                <form method = "post">
+                        {{ form.hidden_tag() }} <br/>
+                        {{ form.user }}
+                        {% if form.user.errors %}
+                                {% for error in form.user.errors %}
+                                <div> {{ error }} </div>
+                                {% endfor %}
+                        {% endif %}
+                        {{ form.submit }}
+                </form>
+        </center>
+</body>

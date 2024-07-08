@@ -1,0 +1,24 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Edit </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+    <a href = "../../admin_panel">Previous</a>
+    <br/>
+    <center>
+            <form method = "post">
+                    <textarea rows = 45 cols = 65 name = "content">{{ content }}</textarea>
+                    <p><input type = "submit" value = "Update"></p>
+            </form>
+            <form method = "post" action = "" enctype = "multipart/form-data">
+                <p><input type = "file" name = "file" accept="image/png, image/jpg, image/jpeg, image/gif"></p>
+                <p><input type = "submit" value = "Upload"></p>
+            </form>
+    </center>
+</body>

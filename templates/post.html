@@ -1,0 +1,71 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Post </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+        <a href = "../../">Home</a> <br/>
+        <a href = "../../post_search/0">Blog Feed</a>
+        <br/>
+        <center>
+                {{ datetime }} <br/>
+                {% if modified_post %}
+                <p>(modified)</p> <br/>
+                {% endif %}
+                <b>{{ title }}</b> <br/>
+                {{ content|safe }} <br/>
+                {% if auth %}
+                <a> Files inputed in this post are {{ files_names }} </a>
+                {% endif %}
+                <br/>
+                <a href = "../comment_page_post/{{ post_title }}+0+N">Comment</a>
+        </center>
+        <br/>
+        {% if auth %}
+                <form method = "post">
+               {{ form.hidden_tag() }} <br/>
+               {{ form.submit }} <br/>
+                </form>
+                <a href = "../post_edit/{{ post_title }}">Edit post</a> <br/>
+                {% if com_status %}
+                <form method = "post">
+                        <input name = "Ft5!Qero56?dl" type = "submit" value = "Forbid comments">
+                </form>
+                {% else %}
+                <form method = "post">
+                        <input name = "Ty67:!?sdfs56k" type = "submit" value = "Allow comments">
+                </form>
+                {% endif %}
+        {% endif %}
+        <hr/>
+        {% if com_status %}
+        {% for i in comments %}
+                {% if i[2] != 0 %}
+                <a style = "margin-left:1cm; margin-top:.5cm;"><b>{{ i[4] }}</b></a>
+                <div style = "margin-left:1cm;">  {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (modified) {% endif %}</div> 
+                {% if user_name == i[4] %}
+                <a style = "margin-left:1cm;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a><br/>
+                <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
+                {% elif auth %}
+                <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
+                {% endif %}
+                <br/> 
+                {% else %}
+                <a style = "margin-top:1.2cm;"><b>{{ i[4] }}</b></a>
+                <div> {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (mofified) {% endif %} </div> 
+                       <div> <a href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </div>
+                       {% if user_name == i[4] %}
+                       <a href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> <br/>
+                       <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
+                       {% elif auth %}
+                       <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
+                       {% endif %}
+                {% endif %}
+        {% endfor %}
+        {% endif %}
+</body>

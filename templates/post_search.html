@@ -1,0 +1,50 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Blog </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+    <a href = "../../">Home</a>
+    <br/>
+    <center>
+            <b>Search a Post</b> <br/>
+            <form method = "post">
+                    {{ form.hidden_tag() }}
+                    {{ form.content }}
+                    {{ form.submit }}
+            </form>
+            <br/>
+    <table>
+            <tr>
+                <th>Title</th>
+                <th>Server Date Time</th>
+            </tr>
+            {% for i in range(0, posts|length) %}
+                <tr>
+                        <td> <center> <a href = "../all_posts/{{ title_link[i] }}">{{ posts[i][0] }}</a> </center> </td>
+                        <td> <center> {{ posts[i][1] }} </center> </td>
+                </tr>
+            {% endfor %}
+    </table>
+    </center>
+    {% if page %}
+    <a href = "{{ page - 1 }}">Previous</a><br/>
+    {% endif %}
+    <a href = "{{ page + 1 }}">Next</a> <br/>
+    {% if auth %}
+        {% if com_status %}
+        <form method = "post">
+                <input name = "Ft5!Qero56?dl" type = "submit" value = "Forbid comments">
+        </form>
+        {% else %}
+        <form method = "post">
+                <input name = "Ty67:!?sdfs56k" type = "submit" value = "Allow comments">
+        </form>
+        {% endif %}
+    {% endif %}
+</body>

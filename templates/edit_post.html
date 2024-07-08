@@ -1,0 +1,19 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Edit Post </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+<body>
+        <a href = "../../all_posts/{{ post_title }}">Related Post</a>
+        <br/>
+        <center>
+                <form method = "post">
+                        <textarea rows = 45 cols = 65 name="content">{{ content }}</textarea>
+                        <div> <input type = "submit" value= "Submit"> </div>
+                </form>
+        </center>
+</body>

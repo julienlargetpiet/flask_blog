@@ -1,0 +1,18 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> User Ip </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+<body>
+        <center>
+                {{ content }} <br/>
+                <form method = "post">
+                        {{ form.hidden_tag() }} <br/>
+                        {{ form.submit }}
+                </form>
+        </center>
+</body>

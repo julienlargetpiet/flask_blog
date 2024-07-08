@@ -1,0 +1,39 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> News </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+        <a href = "../../">Home</a> <br/>
+        <a href = "../../news_search/0">News Feed</a>
+        <br/>
+        <center>
+                {{ date_time }}<br/>
+                {% if news_modified %}
+                (modified) <br/>
+                {% endif %}
+                <b>{{ title }}</b>
+                <br/>
+                {{ content|safe }}
+        <br/>
+        </center>
+        {% if auth %}
+                <center>
+                <br/>
+                <a>The files inputed with this news post are {{ files_used }}</a>
+                </center> 
+                <br/>
+                <form method = "post">
+                {{ form_del.hidden_tag() }}
+                {{ form_del.submit }} 
+                </form> 
+                <br/>
+                <a href = "../news_edit/{{ title }}">Edit News</a>
+                <br/>
+        {% endif %}
+</body>

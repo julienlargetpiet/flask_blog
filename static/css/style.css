@@ -1,0 +1,33 @@
+.line{
+        width:700px;
+        border:1px solid black;
+        margin-left:0cm;
+        margin-right:0cm;
+        border-color:StreetBlue;
+}
+
+.scroll {
+        overflow-y:scroll;
+        height:200px;
+        width:400px;
+}
+
+table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 50%;
+}
+
+td, th {
+        border: 1px solid #dddddd;
+        text-algn: left;
+        padding: 8px;
+}
+
+code {
+        font-family: Consolas, "courier new";
+        color: crimson;
+        background-color: #f1f1f1;
+        padding: 2px;
+        font-size: 105%;
+}

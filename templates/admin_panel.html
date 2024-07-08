@@ -1,0 +1,23 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Admin Panel </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+    <a href = "../">Home</a> 
+    <center>
+          <br/>
+           Admin Panel
+           <div style = "margin-top: 5cm">
+                   <a style = "margin-top: .5cm" href = "edit">Edit Profile</a> <br/> 
+                   <a style = "margin-top: .5cm" href = "comment_filters">Edit comment filters</a> <br/>
+                   <a style = "margin-top: .5cm" href = "edit_ip">Edit ip blacklist</a> <br/>
+                <a style = "margin-top: .5cm" href = "see_user_ip">Get ip from any user</a>
+           </div>
+    </center>
+</body>
