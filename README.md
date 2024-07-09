@@ -50,7 +50,7 @@ It is a webpage where a news post is, comments are not possible on the news post
 
 ### Add Post
 
-It is a webpage where you can write your news post in **html and/or markown, you can add filest with the path `../../static/files/filename`**
+It is a webpage where you can write your news post in **html and/or markown, you can add files with the path `../../static/files/filename`**
 
 ### Add News 
 
