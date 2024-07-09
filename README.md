@@ -164,6 +164,8 @@ You just have to create the following file `/etc/nginx/sites-available/my-server
 
 It looks like that:
 
+#############
+
 
 server {
     server_name domain_name www.domain_name;
@@ -183,6 +185,8 @@ server {
     server_name 91.108.121.247;
     return 301 http://domain_name;
 }
+
+#############
 
 If you want to activate **https**, you can do this with `certbot`
 
