@@ -17,7 +17,7 @@ If you are only a user:
 - a link to the **blog post feed**
 - a link to the **news feed**
 - a link to your **recommendations**
-- a link to **create an account (username and strong password required) **
+- a link to **create an account (username and strong password required)**
 - a link to **SignIn**
 - a link to **SignOut**
 
