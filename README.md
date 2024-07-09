@@ -165,7 +165,7 @@ You just have to create the following file `/etc/nginx/sites-available/my-server
 It looks like that:
 
 
-`server {
+server {
     server_name domain_name www.domain_name;
 
     set_real_ip_from 10.0.0.0/8;
@@ -182,7 +182,7 @@ server {
     listen 80;
     server_name 91.108.121.247;
     return 301 http://domain_name;
-}`
+}
 
 If you want to activate **https**, you can do this with `certbot`
 
