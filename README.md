@@ -116,14 +116,23 @@ With `systemd`, create a service named `/etc/systemd/system/flask_blog.service`
 
 It looks like that:
 
-`[Service] \n
+`
+[Service] 
+
 User=username
+
 Group=www-data
+
 WorkingDirectory=/home/username/flask_blog
+
 Environment="PATH=/home/username/flask_blog/menv/bin"
+
 ExecStart=/home/username/flask_blog/menv/bin/gunicorn -w 3 --timeout 90 --bind server_ip:8000 wsgi:app
 
+
+
 [Install]
+
 WantedBy=multi-user.target`
 
 Replace `username` by your username in the vps and the `server_ip` with th ip of your vps.
