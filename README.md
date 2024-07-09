@@ -214,3 +214,14 @@ Now, you can reboot to see if the service starts normally after booting your ser
 
 `sudo reboot`
 
+# Security
+
+Passwords are encrypted in the database by **aes**
+
+Warning, change the value of the:
+
+`app.config["allow_com"]` and `app.config["forbid_com"]`
+
+
+As well as those store in `templates/post.html`, rows 37 and 41. 
+
