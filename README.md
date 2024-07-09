@@ -81,6 +81,120 @@ Works with gunicorn
 
 ## Reverse Proxy (recommended)
 
-Nginx
+NGINX
 
+# Installation process
+
+## Git clone
+
+In your home directory create a folder containing all the code code base of this application via `git clone https://julienlargetpiet/flask_app`
+
+## Requirements
+
+Change directory with `cd flask_app`
+
+Install mariadb:
+
+`sudo apt-get install mariadb-server-10.5`
+
+Create a python virtual environment named menv
+`python3 -m venv menv`
+
+Connect to it
+
+`. menv/bin/activate`
+
+Install required python libraries
+
+`pip install requirements.txt`
+
+## VPS configuration (Debian 11)
+
+### Gunicorn service
+
+With `systemd`, create a service named `/etc/systemd/system/flask_blog.service`
+
+It looks like that:
+
+`[Service]
+User=username
+Group=www-data
+WorkingDirectory=/home/username/flask_blog
+Environment="PATH=/home/username/flask_blog/menv/bin"
+ExecStart=/home/username/flask_blog/menv/bin/gunicorn -w 3 --timeout 90 --bind server_ip:8000 wsgi:app
+
+[Install]
+WantedBy=multi-user.target`
+
+Replace `username` by your username in the vps and the `server_ip` with th ip of your vps.
+You can do this manually or with the following command:
+`sed -i s/username/$(whoami)/g /etc/systemd/system/flask_blog.service` 
+`sed -i s/server_ip/$(curl ipinfo.io/ip)/g /etc/systemd/system/flask_blog.service`
+
+Also you can increase th numbers of workers based on th number of cores on your vps, the number of cores should equal to 2xnumber_cores + 1, so 3 in the case of the vps having one core.
+
+Start this service:
+
+`sudo systemctl start --now flask_blog.service`
+
+See if it works fine:
+
+`sudo systemctl status flask_blog.service`
+
+If no problem, enable this service:
+
+`sudo systemctl enable flask_blog.service`
+
+### NGINX (1.18.0)
+
+Supposing you have bought a domain name and redirect it to your server via host company pannel or another method.
+
+`sudo apt-get install nginx`
+
+Normally the file `/etc/nginx/nginx.conf` is already filled normally.
+You just have to create the following file `/etc/nginx/sites-available/my-server.conf`
+
+It looks like that:
+
+
+`server {
+    server_name domain_name www.domain_name;
+
+    set_real_ip_from 10.0.0.0/8;
+    real_ip_header X-Real-IP;
+    real_ip_recursive on;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/julien/flask-gunicorn/my-server.sock;
+    }
+}
+
+server {
+    listen 80;
+    server_name 91.108.121.247;
+    return 301 http://domain_name;
+}`
+
+If you want to activate **https**, you can do this with `certbot`
+
+`sudo apt-get install python3-certbot-nginx`
+
+`sudo certbot certonly --webroot -w /var/www/html -d domain_name`
+
+Activate service
+
+`sudo systemctl start --now nginx`
+
+See if alright
+
+`sudo systemctl status nginx`
+
+If so, enable this service
+
+`sudo systemctl enable nginx`
+
+Now, you can reboot to see if the service starts normally after booting your server
+
+`sudo reboot`
 
