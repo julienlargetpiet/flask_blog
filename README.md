@@ -116,7 +116,6 @@ With `systemd`, create a service named `/etc/systemd/system/flask_blog.service`
 
 It looks like that:
 
-<code>
 [Service] 
 
 User=username
@@ -134,7 +133,6 @@ ExecStart=/home/username/flask_blog/menv/bin/gunicorn -w 3 --timeout 90 --bind s
 [Install]
 
 WantedBy=multi-user.target
-</code>
 
 Replace `username` by your username in the vps and the `server_ip` with th ip of your vps.
 You can do this manually or with the following command:
