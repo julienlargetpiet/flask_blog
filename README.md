@@ -133,7 +133,8 @@ ExecStart=/home/username/flask_blog/menv/bin/gunicorn -w 3 --timeout 90 --bind s
 
 [Install]
 
-WantedBy=multi-user.target`
+WantedBy=multi-user.target
+`
 
 Replace `username` by your username in the vps and the `server_ip` with th ip of your vps.
 You can do this manually or with the following command:
