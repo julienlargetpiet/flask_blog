@@ -116,7 +116,7 @@ With `systemd`, create a service named `/etc/systemd/system/flask_blog.service`
 
 It looks like that:
 
-`[Service]
+`[Service] \n
 User=username
 Group=www-data
 WorkingDirectory=/home/username/flask_blog
