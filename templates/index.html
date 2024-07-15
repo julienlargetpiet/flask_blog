@@ -32,6 +32,9 @@
             <a href = "signin">SignIn</a> &nbsp&nbsp
             <a href = "new_user">Create Account</a>
             <a href = "signout">Go for SignOut</a>
+            {% if user_co %}
+            <a href = "edit_password/{{ user_co }}">Edit Password</a>
+            {% endif %}
             <br/>
             {% if auth %}
                 <br/>

@@ -261,6 +261,11 @@ class add_recom_form(FlaskForm):
             render_kw = {"placeholder": "description / tags"})
     submit = SubmitField("Add Recommendation Websites")
 
+class edit_password_form(FlaskForm):
+    password = StringField(validators = [InputRequired(message = "Password Required"), PasswordCheck],
+                           render_kw = {"placeholder": "password"})
+    submit = SubmitField("UPDATE PASSWORD")
+
 @app.before_request
 def block_method():
     ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
@@ -820,6 +825,17 @@ def edit_com_fun(real_id, post_title):
             return render_template("edit_com.html", content = content, post_title = post_title)
         else:
             return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
+
+@app.route("/edit_password/<username>", methods = ("POST", "GET"))
+def edit_passwd(username):
+    if session["username"] == username:
+        form = edit_password_form()
+        if form.validate_on_submit():
+            cursor.execute("UPDATE users SET pawwsord = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
+            return redirect(url_for("index"))
+        return render_template("edit_password.html", form = form)
     else:
         return "Not allowed to be here"
 
