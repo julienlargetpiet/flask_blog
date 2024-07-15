@@ -18,6 +18,7 @@ If you are only a user:
 - a link to the **news feed**
 - a link to your **recommendations**
 - a link to **create an account (username and strong password required)**
+- a link to change password
 - a link to **SignIn**
 - a link to **SignOut**
 
@@ -224,4 +225,5 @@ Warning, change the value of the:
 
 
 As well as those store in `templates/post.html`, rows 37 and 41. 
+
 
