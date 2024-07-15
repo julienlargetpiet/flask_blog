@@ -833,7 +833,7 @@ def edit_passwd(username):
     if session["username"] == username:
         form = edit_password_form()
         if form.validate_on_submit():
-            cursor.execute("UPDATE users SET pawwsord = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
+            cursor.execute("UPDATE users SET password = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
             return redirect(url_for("index"))
         return render_template("edit_password.html", form = form)
     else:
