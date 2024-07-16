@@ -26,6 +26,22 @@
                 <a href = "../comment_page_post/{{ post_title }}+0+N">Comment</a>
         </center>
         <br/>
+        {% if auth_post %}
+                <form method = "post">
+               {{ form.hidden_tag() }} <br/>
+               {{ form.submit }} <br/>
+                </form>
+                <a href = "../post_edit/{{ post_title }}">Edit post</a> <br/>
+                {% if com_status %}
+                <form method = "post">
+                        <input name = "Ft5!Qero56?dl" type = "submit" value = "Forbid comments">
+                </form>
+                {% else %}
+                <form method = "post">
+                        <input name = "Ty67:!?sdfs56k" type = "submit" value = "Allow comments">
+                </form>
+                {% endif %}
+        {% endif %}
         {% if auth %}
                 <form method = "post">
                {{ form.hidden_tag() }} <br/>
@@ -51,7 +67,7 @@
                 {% if user_name == i[4] %}
                 <a style = "margin-left:1cm;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a><br/>
                 <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
-                {% elif auth %}
+                {% elif auth or auth_rm_com %}
                 <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
                 {% endif %}
                 <br/> 
@@ -62,7 +78,7 @@
                        {% if user_name == i[4] %}
                        <a href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> <br/>
                        <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
-                       {% elif auth %}
+                       {% elif auth or auth_rm_com %}
                        <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
                        {% endif %}
                 {% endif %}

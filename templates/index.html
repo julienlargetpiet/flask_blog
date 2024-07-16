@@ -36,12 +36,34 @@
             <a href = "edit_password/{{ user_co }}">Edit Password</a>
             {% endif %}
             <br/>
+            {% if auth_post %}
+            <div> 
+                <a href = "new_post">New Post</a> <br/>
+            </div>
+            {% endif %}
+            {% if auth_news %}
+            <div> 
+                <a href = "new_news_post">New news Post</a> <br/>
+            </div>
+            {% endif %}
+            {% if auth_recom %}
+            <div> 
+                <a href = "add_recom">Add Recommendations</a> <br/>
+            </div>
+            {% endif %}
+            <br/>
+            {% if auth_ip %}
+            <div> 
+                <a href = "see_user_ip">Get user ip (and block)</a>
+            </div>
+            {% endif %}
+            <br/>
             {% if auth %}
                 <br/>
                 <a href = "new_post">New Post</a> <br/>
                 <a href = "new_news_post">New news Post</a> <br/>
                 <a href = "admin_panel">Admin Panel</a> <br/>
-                <a href = "add_recom">Add Recommendations</a>
+                <a href = "add_recom">Add Recommendations</a> <br/>
             {% endif %}
     </center>
 </body>

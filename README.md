@@ -226,4 +226,20 @@ Warning, change the value of the:
 
 As well as those store in `templates/post.html`, rows 37 and 41. 
 
+# Administration
+
+As an administrator, you can grant privileges separately on chosen users.
+The privileges are to delete comments, to post in the blog feed, to post in the news feed, to post in the recommendation feed and to see user ip and ip ban it.
+You can **grant** privileges by clicking on the related link in the administration pannel page.
+You can grant privileges on multiple users once by separating usernames by a comma.
+You can **revoke** privileges by clicking on the related link on the administration pannel page.
+You can revoke privileges on multiple users once by separating usernames by a comma.
+You can see the privileges status of all users by clicking on the related link on the administration pannel page.
+
+
+
+
+
+
+
 

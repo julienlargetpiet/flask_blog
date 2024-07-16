@@ -22,6 +22,21 @@
                 {{ content|safe }}
         <br/>
         </center>
+        {% if auth_news %}
+                <center>
+                <br/>
+                <a>The files inputed with this news post are {{ files_used }}</a>
+                </center> 
+                <br/>
+                <form method = "post">
+                {{ form_del.hidden_tag() }}
+                {{ form_del.submit }} 
+                </form> 
+                <br/>
+                <a href = "../news_edit/{{ title }}">Edit News</a>
+                <br/>
+        {% endif %}
+
         {% if auth %}
                 <center>
                 <br/>

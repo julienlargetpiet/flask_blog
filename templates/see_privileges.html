@@ -1,0 +1,41 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Index </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+<body>
+        <a href = "../admin_panel">Previous</a>
+        <center>
+                <form method = "post">
+                        {{ form.hidden_tag() }} 
+                        {{ form.username }} <br/>
+                        {{ form.submit }}
+                </form>
+                <table>
+                        <tr>
+                                <th>Username</th>
+                                <th>Allow to post in blog feed</th>
+                                <th>Allow to post in news feed</th>
+                                <th>Allow to remove comments</th>
+                                <th>Allow to ban ip user</th>
+                                <th>Allow to add recommendations</th>
+                        </tr>
+                        {% for rslt in result %}
+                        <tr>
+                                <td>{{rslt[5]}}</td>
+                                <td>{{rslt[0]}}</td>
+                                <td>{{rslt[1]}}</td>
+                                <td>{{rslt[2]}}</td>
+                                <td>{{rslt[3]}}</td>
+                                <td>{{rslt[4]}}</td>
+                        </tr>
+                        {% endfor %}
+                </table>
+        </center>
+</body>
+
+

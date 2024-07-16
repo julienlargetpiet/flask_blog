@@ -14,7 +14,7 @@ from PIL import Image
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask import Flask, render_template, request, abort, redirect, send_file, session, url_for, jsonify
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField
+from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, widgets, SelectMultipleField
 from wtforms.validators import *
 from flask_session import Session
 from Crypto.Cipher import AES
@@ -35,7 +35,7 @@ app.config["MAX_IP_PER_ACCOUNT"] = 15
 Session(app)
 
 params = mariadb.connect(
-    user = "julien",
+    user = "kvv",
     password = "mamaafricadu78",
     host = "localhost",
     database = "blog_teste",
@@ -44,6 +44,10 @@ params = mariadb.connect(
 cursor = params.cursor()
 
 socketio = SocketIO(app, cors_allowed_origins = "*")
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label = False)
+    option_widget = widgets.CheckboxInput()
 
 def comment_filter(value: str) -> str:
     value = " " + value + " "
@@ -142,6 +146,13 @@ def UsernameCheck(form, field):
     if field.data in result:
         raise validators.ValidationError("Username already taken")
     result = []
+    result.append(re.search(r'\+', field.data))
+    result.append(re.search(r'\-', field.data))
+    result.append(re.search(r'\(', field.data))
+    result.append(re.search(r'\)', field.data))
+    result.append(re.search(r'\[', field.data))
+    result.append(re.search(r'\]', field.data))
+    result.append(re.search(r',', field.data))
     with open("banned_usernames.csv", "r", encoding = "utf-8") as csv_file:
         cur_f = csv.reader(csv_file)
         for i in cur_f:
@@ -266,6 +277,17 @@ class edit_password_form(FlaskForm):
                            render_kw = {"placeholder": "password"})
     submit = SubmitField("UPDATE PASSWORD")
 
+class add_spe_form(FlaskForm):
+    usernames = StringField(validators = [InputRequired()],
+            render_kw = {"placeholder": "username(s)"})
+    modalities = MultiCheckboxField("Label", choices = ["allow_post", "allow_news", "allow_rm_com", "allow_user_ban", "allow_recom"], 
+            render_kw = {"class": "myUL"}) 
+    submit = SubmitField("SUBMIT")
+
+class see_privileges_form(FlaskForm):
+    username = StringField(render_kw = {"placeholder": "username"})
+    submit = SubmitField("SEARCH")
+
 @app.before_request
 def block_method():
     ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
@@ -279,12 +301,33 @@ def block_method():
 @app.route("/", methods = ("POST", "GET"))
 def index():
     auth = False
+    auth_ip = False
+    auth_post = False
+    auth_news = False
+    auth_recom = False
     show_result = False
     user_status = ""
     if "username" in session:
         user_status = session["username"]
         if session["username"] == "admin":
             auth = True
+        else:
+            cursor.execute("SELECT allow_user_ban FROM users WHERE username = ?;", (user_status,))
+            result = cursor.fetchall()[0][0]
+            if result:
+                auth_ip = True
+            cursor.execute("SELECT allow_post FROM users WHERE username = ?;", (user_status,))
+            result = cursor.fetchall()[0][0]
+            if result:
+                auth_post = True
+            cursor.execute("SELECT allow_news FROM users WHERE username = ?;", (user_status,))
+            result = cursor.fetchall()[0][0]
+            if result:
+                auth_news = True
+            cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (user_status,))
+            result = cursor.fetchall()[0][0]
+            if result:
+                auth_recom = True
     if request.method == "POST":
         if "username" in session:
             cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
@@ -314,7 +357,8 @@ def index():
         elif not show_result[0][0]:
             show_result = True
     return render_template("index.html", description = result, recommends = result2, show_result = show_result, 
-            auth = auth, user_co = user_status)
+            auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
+            auth_recom = auth_recom)
 
 @app.route("/admin_panel", methods = ("POST", "GET"))
 def admin_panel():
@@ -327,7 +371,9 @@ def admin_panel():
 @app.route("/see_user_ip", methods = ("POST", "GET"))
 def see_user_ip_fun():
     if "username" in session:
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_user_ban FROM users WHERE username = ?;", (session["username"],))
+        result = cursor.fetchall()[0][0]
+        if session["username"] == "admin" or result:
             form = user_ip_form()
             if form.validate_on_submit():
                 return redirect(url_for("after_user_ip_fun", user = form.user.data))
@@ -339,7 +385,9 @@ def see_user_ip_fun():
 @app.route("/after_user_ip/<user>", methods = ("POST", "GET"))
 def after_user_ip_fun(user):
     if "username" in session:
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_user_ban FROM users WHERE username = ?;", (session["username"],))
+        result = cursor.fetchall()[0][0]
+        if session["username"] == "admin" or result:
             form = after_ip_form()
             cursor.execute("SELECT ip FROM users WHERE username = ?;", (user,))
             result = cursor.fetchall()[0][0]
@@ -347,7 +395,10 @@ def after_user_ip_fun(user):
                 cur_f = open("blacklist.csv", "a") 
                 cur_f.write("\n" + result + ",")
                 cur_f.close
-                return redirect(url_for("admin_panel"))
+                if session["username"] == "admin":
+                    return redirect(url_for("admin_panel"))
+                else:
+                    return redirec(url_for("index"))
             return render_template("after_user_ip.html", content = result, form = form)
         else:
             return "Not allowed to be here"
@@ -437,7 +488,8 @@ def new_user():
         return "Created too many accounts from the same ip adress"
     form = newuser_form()
     if form.validate_on_submit():
-        cursor.execute("INSERT INTO users VALUES (?, ?, ?);", 
+        print(cur_ip)
+        cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0);", 
                 (form.username.data, 
                     generate_password_hash(form.password.data), cur_ip))
         session["username"] = form.username.data
@@ -467,7 +519,9 @@ def signin():
 @app.route("/new_post", methods = ("POST", "GET"))
 def new_post():
     if "username" in session:
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_post FROM users WHERE username = ?;", (session["username"],))
+        result = cursor.fetchall()[0][0]
+        if session["username"] == "admin" or result:
             form = new_post_form()
             if form.validate_on_submit():
                 all_files_names = ""
@@ -499,8 +553,8 @@ def new_post():
                     form.tags.data = form.title.data
                 cur_time = str(datetime.datetime.now())
                 cur_time = cur_time[0:(len(cur_time) - 7)]
-                cursor.execute("INSERT INTO posts (date_time, text_content, title, tags, files_name, allow_comments) VALUE (?, ?, ?, ?, ?, TRUE);",
-                        (cur_time, form.n_post_content.data, form.title.data, form.tags.data, all_files_names))
+                cursor.execute("INSERT INTO posts (date_time, text_content, title, tags, files_name, allow_comments, username) VALUE (?, ?, ?, ?, ?, TRUE, ?);",
+                        (cur_time, form.n_post_content.data, form.title.data, form.tags.data, all_files_names, session["username"]))
                 return redirect(url_for("posts_fun", post_title = re.sub(" ", "_", form.title.data)))
             return render_template("new_post.html", form = form)
         else:
@@ -511,13 +565,23 @@ def new_post():
 @app.route("/all_posts/<post_title>", methods = ("POST", "GET"))
 def posts_fun(post_title):
     auth = False
+    auth_post = False
+    auth_rm_com = False
     r = re.compile("_")
     post_title = r.sub(" ", post_title)
     user_name = ""
     if "username" in session:
         user_name = session["username"]
+        cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
+        result = cursor.fetchall()[0][0]
+        if result == session["username"] and result != "admin":
+            auth_post = True
         if session["username"] == "admin":
             auth = True
+        cursor.execute("SELECT allow_rm_com FROM users WHERE username = ?;", (session["username"],))
+        result = cursor.fetchall()[0][0]
+        if result:
+            auth_rm_com = True
     form = post_del_form()
     cursor.execute("SELECT allow_comments FROM posts WHERE title = ?;", (post_title,))
     com_status = cursor.fetchall()[0][0]
@@ -540,21 +604,26 @@ def posts_fun(post_title):
     return render_template("post.html",
             datetime = res[0], title = res[1], content = markdown.markdown(res[2]), post_title = post_title,
             comments = res_comments, files_names = res[3], auth = auth, form = form, com_status = com_status,
-                           user_name = user_name, modified_post = res[4])
+                           user_name = user_name, modified_post = res[4], auth_post = auth_post, auth_rm_com = auth_rm_com)
 
 @app.route("/delete_com/<real_id>+<post_title>+<com_id>+<com_status>", methods = ("POST", "GET"))
 def delete_fun(real_id, post_title, com_id, com_status):
     if "username" in session:
         cursor.execute("SELECT username FROM blog_comments WHERE real_id = ?;", (real_id,))
         result = cursor.fetchall()[0][0]
-        if session["username"] in ["admin", result]:
+        cursor.execute("SELECT allow_rm_com FROM users WHERE username = ?;", (session["username"],))
+        result2 = cursor.fetchall()[0][0]
+        cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
+        result3 = cursor.fetchall()[0][0]
+        print("result2", result2)
+        print("result3", result3)
+        if session["username"] in ["admin", result] or result2 or result3 == session["username"]:
             r = re.compile("_")
             post_title = r.sub(" ", post_title)
             form = delete_form()
             if form.validate_on_submit():
                 r = re.compile(" ")
                 if com_status == "0":
-                    #cursor.execute("SELECT * FROM blog_comments WHERE com_id = ? AND post_title = ?;", (com_id, post_title))
                     cursor.execute("DELETE FROM blog_comments WHERE com_id = ? AND post_title = ?;", (com_id, post_title))
                     post_title = r.sub("_", post_title)
                     return redirect(url_for("posts_fun", post_title = post_title))
@@ -674,17 +743,22 @@ def news_fun(news_title):
     cursor.execute("SELECT title, content, date_time, files_name, modified FROM news WHERE title = ?;", (news_title,))
     res = cursor.fetchall()
     auth = False
+    auth_news = False
     form_del = news_del_form()
     if form_del.validate_on_submit():
         cursor.execute("DELETE FROM news WHERE title = ?", (news_title,))
         return redirect(url_for("news_search_fun", page = 0))
     if "username" in session:
+        cursor.execute("SELECT username FROM news WHERE title = ?;", (news_title,))
+        result = cursor.fetchall()[0][0]
+        if result == session["username"] and result != "admin":
+            auth_news = True
         if session["username"] == "admin":
             auth = True
     if len(res) > 0:
         res = res[0]
         return render_template("news.html", title = re.sub(" ", "_", res[0]), content = res[1], date_time = res[2], 
-                auth = auth, form_del = form_del, files_used = res[3], news_modified = res[4])
+                auth = auth, form_del = form_del, files_used = res[3], news_modified = res[4], auth_news = auth_news)
     else:
         return "This page does not exist or does not exist anymore"
 
@@ -705,7 +779,9 @@ def news_search_fun(page):
 @app.route("/new_news_post", methods = ("POST", "GET"))
 def new_news_post():
     if "username" in session:
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_news FROM users WHERE username = ?;", (session["username"],))
+        result = cursor.fetchall()[0][0]
+        if session["username"] == "admin" or  result:
             form = new_news_post_form()
             if form.validate_on_submit():
                 all_files_names = ""
@@ -736,8 +812,8 @@ def new_news_post():
                                 all_files_names = all_files_names[0:len(all_files_names) - 2]
                 cur_time = str(datetime.datetime.now())
                 cur_time = cur_time[0:(len(cur_time) - 7)]
-                cursor.execute("INSERT INTO news (title, content, date_time, files_name) VALUE (?, ?, ?, ?);", 
-                        (form.title.data, form.content.data, cur_time, all_files_names))
+                cursor.execute("INSERT INTO news (title, content, date_time, files_name, username) VALUE (?, ?, ?, ?, ?);", 
+                        (form.title.data, form.content.data, cur_time, all_files_names, session["username"]))
                 return redirect(url_for("news_fun", news_title = form.title.data))
             return render_template("new_news_post.html", form = form)
         else:
@@ -783,9 +859,9 @@ def recom_fun():
 @app.route("/add_recom", methods = ("GET", "POST"))
 def add_recom_fun():
     if "username" in session:
-        print("ok")
-        print(session["username"])
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
+        result = cursor.fetchall()[0][0]
+        if session["username"] == "admin" or result:
             form = add_recom_form()
             print("here")
             if form.validate_on_submit():
@@ -833,9 +909,67 @@ def edit_passwd(username):
     if session["username"] == username:
         form = edit_password_form()
         if form.validate_on_submit():
+            print("new passord:", form.password.data)
             cursor.execute("UPDATE users SET password = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
             return redirect(url_for("index"))
         return render_template("edit_password.html", form = form)
+    else:
+        return "Not allowed to be here"
+
+@app.route("/add_spe", methods = ("POST", "GET"))
+def add_spe():
+    if "username" in session:
+        if session["username"] == "admin":
+            form = add_spe_form()
+            if form.validate_on_submit():
+                if len(form.modalities.data):
+                    cur_users = form.usernames.data.split(",")
+                    for mod in form.modalities.data:
+                        for usr in cur_users:
+                            cursor.execute(f"UPDATE users SET {mod} = TRUE WHERE username = ?;", (usr,)) 
+                    return redirect(url_for("admin_panel"))
+                else:
+                    return redirect(url_for("admin_panel"))
+            return render_template("add_spe.html", form = form)
+        else:
+            return "Not allowed to be here"
+    return "Not allowed to be here"
+
+@app.route("/rm_add_spe", methods = ("POST", "GET"))
+def rm_add_spe():
+    if "username" in session:
+        if session["username"] == "admin":
+            form = add_spe_form()
+            if form.validate_on_submit():
+                if len(form.modalities.data):
+                    cur_users = form.usernames.data.split(",")
+                    for mod in form.modalities.data:
+                        for usr in cur_users:
+                            cursor.execute(f"UPDATE users SET {mod} = FALSE WHERE username = ?;", (usr,))  
+                    return redirect(url_for("admin_panel"))
+                else:
+                    return redirect(url_for("admin_panel"))
+            return render_template("add_spe.html", form = form)
+        else:
+            return "Not allowed to be here"
+    return "Not allowed to be here"
+
+@app.route("/see_privileges", methods = ("POST", "GET"))
+def see_privileges():
+    if "username" in session:
+        if session["username"] == "admin":
+            form = see_privileges_form()
+            cursor.execute("SELECT allow_post, allow_news, allow_rm_com, allow_user_ban, allow_recom, username FROM users;")
+            result = cursor.fetchall()
+            if form.validate_on_submit():
+                if form.username.data == "":
+                    cursor.execute("SELECT allow_post, allow_news, allow_rm_com, allow_user_ban, allow_recom, username FROM users WHERE username RLIKE ?;", (".",))   
+                else:
+                    cursor.execute("SELECT allow_post, allow_news, allow_rm_com, allow_user_ban, allow_recom, username FROM users WHERE username RLIKE ?;", (form.username.data,)) 
+                result = cursor.fetchall()
+            return render_template("see_privileges.html", form = form, result = result)
+        else:
+            return "Not allowed to be here"
     else:
         return "Not allowed to be here"
 
