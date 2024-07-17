@@ -489,7 +489,7 @@ def new_user():
     form = newuser_form()
     if form.validate_on_submit():
         print(cur_ip)
-        cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0);", 
+        cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0);", 
                 (form.username.data, 
                     generate_password_hash(form.password.data), cur_ip))
         session["username"] = form.username.data
