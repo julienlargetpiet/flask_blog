@@ -1,0 +1,22 @@
+####################
+
+[Service] 
+
+User=username
+
+Group=www-data
+
+WorkingDirectory=/home/username/flask_blog
+
+Environment="PATH=/home/username/flask_blog/menv/bin"
+
+ExecStart=/home/username/flask_blog/menv/bin/gunicorn -w 3 --timeout 90 --bind server_ip:8000 wsgi:app
+
+
+
+[Install]
+
+WantedBy=multi-user.target
+
+######################
+
