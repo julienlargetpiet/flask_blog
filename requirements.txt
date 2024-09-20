@@ -1,0 +1,10 @@
+mariadb==1.0.11
+markdown
+python-magic==0.4.27
+werkzeug==3.0.3
+pillow==10.3.0
+flask_socketio
+flask==2.3.3
+flask-wtf==1.2.1
+flask-session==0.8.0
+datetime
