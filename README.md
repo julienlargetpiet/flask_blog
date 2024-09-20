@@ -117,36 +117,19 @@ Install required python libraries
 
 With `systemd`, create a service named `/etc/systemd/system/flask_blog.service`
 
-It looks like that:
-
-####################
-
-[Service] 
-
-User=username
-
-Group=www-data
-
-WorkingDirectory=/home/username/flask_blog
-
-Environment="PATH=/home/username/flask_blog/menv/bin"
-
-ExecStart=/home/username/flask_blog/menv/bin/gunicorn -w 3 --timeout 90 --bind server_ip:8000 wsgi:app
-
-
-
-[Install]
-
-WantedBy=multi-user.target
-
-######################
+In order to do that: 
 
 Replace `username` by your username in the vps and the `server_ip` with th ip of your vps.
 You can do this manually or with the following command:
-`sed -i s/username/$(whoami)/g /etc/systemd/system/flask_blog.service` 
-`sed -i s/server_ip/$(curl ipinfo.io/ip)/g /etc/systemd/system/flask_blog.service`
 
-Also you can increase th numbers of workers based on th number of cores on your vps, the number of cores should equal to 2xnumber_cores + 1, so 3 in the case of the vps having one core.
+`sed s/username/$(whoami)/g -i deployment_files/flask_blog.service` 
+
+
+`sed s/server_ip/$(curl ipinfo.io/ip)/g -i deployment_files/flask_blog.service`
+
+Now, copy the file in `/etc/systemd/system/flask_blog.service`
+
+At the 13th line of `flask_blog.service`, you can increase the numbers of workers based on the number of cores on your vps, the number of cores should equal to 2xnumber_cores + 1, so 3 in the case of the vps having one core.
 
 Start this service:
 
@@ -166,34 +149,10 @@ Supposing you have bought a domain name and redirect it to your server via host 
 
 `sudo apt-get install nginx`
 
-Normally the file `/etc/nginx/nginx.conf` is already filled normally.
-You just have to create the following file `/etc/nginx/sites-available/my-server.conf`
+Normally the file `/etc/nginx/nginx.conf` is already filled.
+You just have to copy `deployment_files/my-server.conf` to `/etc/nginx/sites-available/my-server.conf`
 
-It looks like that:
-
-#############
-
-
-server {
-    server_name domain_name www.domain_name;
-
-    set_real_ip_from 10.0.0.0/8;
-    real_ip_header X-Real-IP;
-    real_ip_recursive on;
-
-    location / {
-        include proxy_params;
-        proxy_pass http://unix:/home/julien/flask-gunicorn/my-server.sock;
-    }
-}
-
-server {
-    listen 80;
-    server_name 91.108.121.247;
-    return 301 http://domain_name;
-}
-
-#############
+`cp deployment_files/my-server.conf /etc/nginx/sites-available/my-server.conf`
 
 If you want to activate **https**, you can do this with `certbot`
 
