@@ -96,7 +96,7 @@ Change directory with `cd flask_app`
 
 Install mariadb:
 
-`sudo apt-get install mariadb-server-10.5 pip`
+`sudo apt-get install mariadb-server-10.5 pip libmariadb3 libmariadb-dev`
 
 Create a python virtual environment named menv
 `python3 -m venv menv`
