@@ -107,6 +107,8 @@ Connect to it
 
 Install required python libraries
 
+`if [ $(dpkg -l | grep ^python3-blinker$ | wc -l) \> 0 ];then sudo apt remove python3-blinker;fi`
+
 `pip install -r requirements.txt`
 
 ## VPS configuration (Debian 11)
