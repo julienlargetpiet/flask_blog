@@ -137,7 +137,7 @@ Note!
 
 It is at this moment that the admin account is created at the last row of `start.sql`, so make sure to change the password here.
 
-`mariadb -u kvv -p blog < start.sql`
+`mariadb -u database_username -p blog < start.sql`
 
 ## VPS configuration (Debian 11)
 
