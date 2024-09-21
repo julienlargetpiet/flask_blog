@@ -177,9 +177,9 @@ Supposing you have bought a domain name and redirect it to your server via host 
 `sudo apt-get install nginx`
 
 Normally the file `/etc/nginx/nginx.conf` is already filled.
-You just have to copy `deployment_files/my-server.conf` to `/etc/nginx/sites-available/my-server.conf`
+You just have to copy `deployment_files/default` to `/etc/nginx/sites-available/default`
 
-`cp deployment_files/my-server.conf /etc/nginx/sites-available/my-server.conf`
+`cp deployment_files/default /etc/nginx/sites-available/default`
 
 If you want to activate **https**, you can do this with `certbot`
 
