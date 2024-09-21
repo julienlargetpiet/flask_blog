@@ -96,12 +96,12 @@ Change directory with `cd flask_app`
 
 Install mariadb:
 
-`sudo apt-get install mariadb-server-10.5 pip libmariadb3 libmariadb-dev`
+`sudo apt-get install mariadb-server-10.5 pip libmariadb3 libmariadb-dev python3-venv`
 
 Create a python virtual environment named menv
 `python3 -m venv menv`
 
-Connect to it
+Source it
 
 `. menv/bin/activate`
 
@@ -130,6 +130,10 @@ You can do this manually or with the following command:
 Now, copy the file in `/etc/systemd/system/flask_blog.service`
 
 At the 13th line of `flask_blog.service`, you can increase the numbers of workers based on the number of cores on your vps, the number of cores should equal to 2xnumber_cores + 1, so 3 in the case of the vps having one core.
+
+All this process can be automated running the following script as sudo `deployment_files/automation_gunicorn.sh`
+
+`sudo bash deployment_files/automation_gunicorn.sh`
 
 Start this service:
 
