@@ -7,4 +7,5 @@ flask_socketio
 flask==2.3.3
 flask-wtf==1.2.1
 flask-session==0.8.0
+gunicorn==23.0.0
 datetime

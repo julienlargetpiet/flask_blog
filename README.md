@@ -131,10 +131,6 @@ Now, copy the file in `/etc/systemd/system/flask_blog.service`
 
 At the 13th line of `flask_blog.service`, you can increase the numbers of workers based on the number of cores on your vps, the number of cores should equal to 2xnumber_cores + 1, so 3 in the case of the vps having one core.
 
-All this process can be automated running the following script as sudo `deployment_files/automation_gunicorn.sh`
-
-`sudo bash deployment_files/automation_gunicorn.sh`
-
 Start this service:
 
 `sudo systemctl start --now flask_blog.service`
