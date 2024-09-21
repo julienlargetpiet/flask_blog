@@ -6,4 +6,4 @@ CREATE TABLE users (username VARCHAR(16), password VARCHAR(162), ip VARCHAR(32),
 CREATE TABLE welcome_page (description MEDIUMTEXT, recommends INT UNSIGNED);
 CREATE TABLE recom (http_link TINYTEXT, tags TINYTEXT);
 INSERT INTO welcome_page (description, recommends) VALUE ('description', 0);
-INSERT INTO users (username VARCHAR(16), password VARCHAR(162), ip VARCHAR(32)) VALUE ('admin', 'password', 'ip');
+INSERT INTO users (username, password, ip) VALUE ('admin', 'password', 'ip');

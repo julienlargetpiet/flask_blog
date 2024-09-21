@@ -111,6 +111,34 @@ Install required python libraries
 
 `pip install -r requirements.txt`
 
+## Database
+
+### User creation
+
+`mariadb`
+
+Once in the mariadb shell:
+
+`CREATE USER database_username IDENTIFIED BY 'database_password';`
+
+### Grant privileges
+
+`GRANT ALL PRIVILEGES ON blog.* TO database_username;`
+
+### Create database
+
+`CREATE DATABASE blog;`
+
+### Database configuration
+
+From a bash shell run the following,
+
+Note!
+
+It is at this moment that the admin account is created at the last row of `start.sql`, so make sure to change the password here.
+
+`mariadb -u kvv -p blog < start.sql`
+
 ## VPS configuration (Debian 11)
 
 ### Gunicorn service
