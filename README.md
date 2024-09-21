@@ -129,13 +129,12 @@ Once in the mariadb shell:
 
 `CREATE DATABASE blog;`
 
-### Database configuration
+### Database configuration and admin password
 
 From a bash shell run the following,
 
-Note!
+`python3 admin_password.py strong_password`
 
-It is at this moment that the admin account is created at the last row of `start.sql`, so make sure to change the password here.
 
 `mariadb -u database_username -p blog < start.sql`
 
