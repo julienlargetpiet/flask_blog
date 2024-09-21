@@ -5,7 +5,6 @@ import os
 import math
 import random
 import csv
-import scrypt
 import binascii
 import magic
 from werkzeug.utils import secure_filename
@@ -17,7 +16,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, widgets, SelectMultipleField
 from wtforms.validators import *
 from flask_session import Session
-from Crypto.Cipher import AES
 import datetime
 import time
 from markupsafe import Markup
