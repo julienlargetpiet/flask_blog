@@ -10,7 +10,7 @@ import magic
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
-from flask_socketio import SocketIO, send, emit, join_room, leave_room
+#from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask import Flask, render_template, request, abort, redirect, send_file, session, url_for, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, widgets, SelectMultipleField
@@ -33,15 +33,15 @@ app.config["MAX_IP_PER_ACCOUNT"] = 15
 Session(app)
 
 params = mariadb.connect(
-    user = "kvv",
-    password = "mamaafricadu78",
+    user = "database_username",
+    password = "database_password",
     host = "localhost",
-    database = "blog_teste",
+    database = "blog",
     autocommit = True
         )
 cursor = params.cursor()
 
-socketio = SocketIO(app, cors_allowed_origins = "*")
+#socketio = SocketIO(app, cors_allowed_origins = "*")
 
 class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label = False)
@@ -972,6 +972,6 @@ def see_privileges():
         return "Not allowed to be here"
 
 if __name__ == "__name__":
-    socketio.run(debug = True, threaded = True)
+    app.run(debug = True, threaded = True)
 
 
