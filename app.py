@@ -10,7 +10,6 @@ import magic
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
-#from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask import Flask, render_template, request, abort, redirect, send_file, session, url_for, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, widgets, SelectMultipleField
@@ -40,8 +39,6 @@ params = mariadb.connect(
     autocommit = True
         )
 cursor = params.cursor()
-
-#socketio = SocketIO(app, cors_allowed_origins = "*")
 
 class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label = False)
@@ -329,10 +326,10 @@ def index():
     if request.method == "POST":
         if "username" in session:
             cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
-            show_result = cursor.fetchall()
-            if len(show_result) == 0:
+            cur_result = cursor.fetchall()
+            if len(cur_result) == 0:
                 show_result = True
-            elif not show_result[0][0]:
+            elif not cur_result[0][0]:
                 show_result = True
         if show_result:
             cursor.execute("SELECT recommends FROM welcome_page;")
