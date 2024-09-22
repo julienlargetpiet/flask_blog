@@ -179,13 +179,21 @@ Supposing you have bought a domain name and redirect it to your server via host 
 Normally the file `/etc/nginx/nginx.conf` is already filled.
 You just have to copy `deployment_files/default` to `/etc/nginx/sites-available/default`
 
+Just make sure to replace `domain_names` in `deployment_files/default` to your domain names to match this pattern:
+
+`server_name domain_name1.com www.domain_name1.com ...;`
+
+
 `cp deployment_files/default /etc/nginx/sites-available/default`
 
 If you want to activate **https**, you can do this with `certbot`
 
 `sudo apt-get install python3-certbot-nginx`
 
-`sudo certbot certonly --webroot -w /var/www/html -d domain_name`
+After pointing your domain names to your server,
+
+
+`sudo certbot --nginx -d domain_name1.com -d www.domain_name1.com -d ...`
 
 Activate service
 
