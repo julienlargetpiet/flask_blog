@@ -1,6 +1,7 @@
 server {
+    error_log path_you_want/error_warn.log warn;
     listen 80;
-    server_name 213.210.13.86;
+    server_name domain_names;
 
     location / {
         proxy_pass http://localhost:8000;
