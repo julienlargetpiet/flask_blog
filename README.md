@@ -146,6 +146,11 @@ Before copying it, make sure to change the database_password in this file.
 
 `cp deployment_files/my.cnf /etc/.`
 
+Last, in `app.py`, at row 35:
+
+Change the value of `database_username` to your chosen username.
+
+Also, change the string "database_password" to your real pasword for the database, at row 38. 
 
 ## VPS configuration (Debian 11)
 
