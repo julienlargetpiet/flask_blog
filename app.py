@@ -18,6 +18,7 @@ from flask_session import Session
 import datetime
 import time
 from markupsafe import Markup
+from zipfile import ZipFile, ZIP_DEFLATED
 
 app = Flask(__name__)
 app.static_folder = "static"
@@ -31,8 +32,9 @@ app.config["forbid_com"] = "Ft5!Qero56?dl"
 app.config["MAX_IP_PER_ACCOUNT"] = 15
 Session(app)
 
+database_username = "database_username"
 params = mariadb.connect(
-    user = "database_username",
+    user = database_username,
     password = "database_password",
     host = "localhost",
     database = "blog",
@@ -324,19 +326,25 @@ def index():
             if result:
                 auth_recom = True
     if request.method == "POST":
-        if "username" in session:
-            cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
-            cur_result = cursor.fetchall()
-            if len(cur_result) == 0:
-                show_result = True
-            elif not cur_result[0][0]:
-                show_result = True
-        if show_result:
-            cursor.execute("SELECT recommends FROM welcome_page;")
-            nb_rec = cursor.fetchall()[0][0] + 1
-            cursor.execute("UPDATE welcome_page SET recommends = ?;", (nb_rec,))
-            cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
-            return redirect(url_for("index"))
+        if request.form["cur_form"] == "Submit":
+            if "username" in session:
+                cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
+                cur_result = cursor.fetchall()
+                if len(cur_result) == 0:
+                    show_result = True
+                elif not cur_result[0][0]:
+                    show_result = True
+            if show_result:
+                cursor.execute("SELECT recommends FROM welcome_page;")
+                nb_rec = cursor.fetchall()[0][0] + 1
+                cursor.execute("UPDATE welcome_page SET recommends = ?;", (nb_rec,))
+                cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
+                return redirect(url_for("index"))
+        elif request.form["cur_form"] == "Dump":
+            os.system(f"mysqldump -u {database_username} > static/dump_data/database.sql")
+            with ZipFile("static/dump_data/database.zip", "w", ZIP_DEFLATED) as zip_obj:
+                zip_obj.write("static/dump_data/database.sql")
+            return redirect(url_for("dump_data"))
     cursor.execute("SELECT description, recommends FROM welcome_page;")
     result = cursor.fetchall()
     result2 = result[0][1]
@@ -354,6 +362,16 @@ def index():
     return render_template("index.html", description = result, recommends = result2, show_result = show_result, 
             auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
             auth_recom = auth_recom)
+
+@app.route("/dump_data", methods = ("POST", "GET"))
+def dump_data():
+    if "username" in session:
+        if session["username"] == "admin":
+            return render_template("dump_data.html") 
+        else:
+            return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
 
 @app.route("/admin_panel", methods = ("POST", "GET"))
 def admin_panel():
