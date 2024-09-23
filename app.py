@@ -380,6 +380,9 @@ def admin_panel():
             return render_template("admin_panel.html")
         else:
             return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
+
 
 @app.route("/see_user_ip", methods = ("POST", "GET"))
 def see_user_ip_fun():
