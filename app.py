@@ -341,7 +341,7 @@ def index():
                 cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
                 return redirect(url_for("index"))
         elif request.form["cur_form"] == "Dump":
-            os.system(f"mysqldump -u {database_username} > static/dump_data/database.sql")
+            os.system(f"mysqldump -u {database_username} blog > static/dump_data/database.sql")
             with ZipFile("static/dump_data/database.zip", "w", ZIP_DEFLATED) as zip_obj:
                 zip_obj.write("static/dump_data/database.sql")
             return redirect(url_for("dump_data"))
