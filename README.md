@@ -183,9 +183,13 @@ Just make sure to replace `domain_names` in `deployment_files/default` to your d
 
 `server_name domain_name1.com www.domain_name1.com ...;`
 
-Also, do not forget to change the path of the `error_warn.log file` in `deployment_files/default`.
+Also, do not forget to change the path of the `error_warn.log` and `access.log` files in `deployment_files/default`.
 
-After that, 
+To verify that NGINX configuration works:
+
+`sudo nginx -t`
+
+If successfull,
 
 `cp deployment_files/default /etc/nginx/sites-available/default`
 

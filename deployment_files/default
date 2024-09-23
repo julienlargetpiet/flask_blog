@@ -1,5 +1,6 @@
 server {
     error_log path_you_want/error_warn.log warn;
+    access_log path_you_want/access.log;
     listen 80;
     server_name domain_names;
 
