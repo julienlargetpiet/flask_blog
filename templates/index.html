@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="en">
 <head>
         <title> Index </title>
@@ -14,7 +14,7 @@
             <div style = "margin-top: .5cm"> <a id = "hmn"> {{ recommends }} </a> recommendations </div>
             {% if show_result == True %}
                 <form method = "post" action="" id = "todo-form">
-                        <div id = "button"> <input type = "submit" value = "Submit"> </div>
+                        <div id = "button"> <input type = "submit" value = "Submit" name = "cur_form" > </div>
                 </form>
             {% endif %}
             <hr class = "line">
@@ -64,6 +64,9 @@
                 <a href = "new_news_post">New news Post</a> <br/>
                 <a href = "admin_panel">Admin Panel</a> <br/>
                 <a href = "add_recom">Add Recommendations</a> <br/>
+                <form method="post" action="" id = "to-dump">
+                        <div> <input type = "submit" value = "Dump" name = "cur_form"> </div>
+                </form>
             {% endif %}
     </center>
 </body>
