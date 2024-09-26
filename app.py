@@ -619,7 +619,8 @@ def posts_fun(post_title):
     return render_template("post.html",
             datetime = res[0], title = res[1], content = markdown.markdown(res[2]), post_title = post_title,
             comments = res_comments, files_names = res[3], auth = auth, form = form, com_status = com_status,
-                           user_name = user_name, modified_post = res[4], auth_post = auth_post, auth_rm_com = auth_rm_com)
+                           user_name = user_name, modified_post = res[4], auth_post = auth_post, auth_rm_com = auth_rm_com,
+                           id_allow_com = app.config["allow_com"], id_forbid_com = app.config["forbid_com"])
 
 @app.route("/delete_com/<real_id>+<post_title>+<com_id>+<com_status>", methods = ("POST", "GET"))
 def delete_fun(real_id, post_title, com_id, com_status):
@@ -720,7 +721,8 @@ def post_search_fun(page):
     com_status = all([i[0] for i in com_status])
     if len(result) > 0:
         return render_template("post_search.html", posts = result, page = page, 
-                form = form, title_link = title_link, auth = auth, com_status = com_status)
+                form = form, title_link = title_link, auth = auth, com_status = com_status, 
+                id_allow_com = app.config["allow_com"], id_forbid_com = app.config["forbid_com"])
     elif page == 0:
         return "Not that much posts <a href = '../../'>Home</a>"
     else:

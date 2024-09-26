@@ -39,11 +39,11 @@
     {% if auth %}
         {% if com_status %}
         <form method = "post">
-                <input name = "Ft5!Qero56?dl" type = "submit" value = "Forbid comments">
+                <input name = "{{ id_forbid_com }}" type = "submit" value = "Forbid comments">
         </form>
         {% else %}
         <form method = "post">
-                <input name = "Ty67:!?sdfs56k" type = "submit" value = "Allow comments">
+                <input name = "{{ id_allow_com }}" type = "submit" value = "Allow comments">
         </form>
         {% endif %}
     {% endif %}
