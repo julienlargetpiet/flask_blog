@@ -165,7 +165,7 @@ class newuser_form(FlaskForm):
         render_kw = {"placeholder": "username", "style": "width: 10ch", "style": "height: 2ch"})
     password = StringField(validators = [InputRequired(message = "Password required"), 
         validators.Length(12, 30, message = "Must be between 12 and 30 characters"), PasswordCheck], 
-        render_kw = {"placeholder": "password"})
+                           render_kw = {"placeholder": "password", "style": "-webkit-text-security: circle", "type": "text"})
     submit = SubmitField("CREATE ACCOUNT")
 
 def UsernameCheckSignIn(form, field):
