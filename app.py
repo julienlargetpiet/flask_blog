@@ -504,7 +504,6 @@ def new_user():
         return "Created too many accounts from the same ip adress"
     form = newuser_form()
     if form.validate_on_submit():
-        print(cur_ip)
         cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0);", 
                 (form.username.data, 
                     generate_password_hash(form.password.data), cur_ip))
@@ -631,8 +630,6 @@ def delete_fun(real_id, post_title, com_id, com_status):
         result2 = cursor.fetchall()[0][0]
         cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
         result3 = cursor.fetchall()[0][0]
-        print("result2", result2)
-        print("result3", result3)
         if session["username"] in ["admin", result] or result2 or result3 == session["username"]:
             r = re.compile("_")
             post_title = r.sub(" ", post_title)
@@ -869,7 +866,6 @@ def recom_fun():
         cur_tags = r.sub("|", cur_tags)
     cursor.execute("SELECT * FROM recom WHERE tags RLIKE ?;", (cur_tags,))
     result = cursor.fetchall()
-    print(result)
     return render_template("recom.html", recoms = result, form = form)
 
 @app.route("/add_recom", methods = ("GET", "POST"))
@@ -879,14 +875,11 @@ def add_recom_fun():
         result = cursor.fetchall()[0][0]
         if session["username"] == "admin" or result:
             form = add_recom_form()
-            print("here")
             if form.validate_on_submit():
-                print("ici")
                 cursor.execute("INSERT INTO recom (http_link, tags) VALUE (?, ?);", ( form.http_link.data, form.tags.data))
                 return redirect(url_for("recom_fun"))
             return render_template("add_recom.html", form = form)
         else:
-            print("no")
             return "Not allowed to be here"
     return "Not allowed to be here"
 
@@ -925,7 +918,6 @@ def edit_passwd(username):
     if session["username"] == username:
         form = edit_password_form()
         if form.validate_on_submit():
-            print("new passord:", form.password.data)
             cursor.execute("UPDATE users SET password = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
             return redirect(url_for("index"))
         return render_template("edit_password.html", form = form)
