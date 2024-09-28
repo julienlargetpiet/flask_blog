@@ -864,7 +864,8 @@ def edit_news_fun(news_title):
 @app.route("/recom_delete/<title>", methods = {"GET", "POST"})
 def recom_delete_fun(title):
     if "username" in session:
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
+        if session["username"] == "admin" or cursor.fetchall()[0][0]:
             form = recom_del_form()
             if form.validate_on_submit():
                 cursor.execute("DELETE FROM recom WHERE http_link = ?;", 
@@ -880,7 +881,8 @@ def recom_delete_fun(title):
 def recom_fun():
     auth = False
     if "username" in session:
-        if session["username"] == "admin":
+        cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
+        if session["username"] == "admin" or cursor.fetchall()[0][0]:
             auth = True
     form = recom_form()
     cur_tags = "."
