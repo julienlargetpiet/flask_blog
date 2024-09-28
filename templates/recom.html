@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html lang="en">
 <head>
         <title> Recommendations </title>
@@ -23,12 +23,24 @@
                 <th>Title</th>
                 <th>Description</th>
             </tr>
-            {% for recom in recoms %}
-            <tr>
-                    <td><a href = "{{ recom[0] }}">{{ recom[0] }}</a></td>
-                    <td> {{ recom[1] }} </td>
-            </tr>
-            {% endfor %}
+            {% if auth %}
+                {% for recom in recoms %}
+                <tr>
+                        <td><a href = "{{ recom[0] }}">{{ recom[0] }}</a></td>
+                        <td> {{ recom[1] }} </td>
+                        <td> 
+                                <a href = "recom_delete/{{ recom[0].replace(":", rpl_points).replace("//", rpl_slashes) }}">Delete</a>
+                        </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                {% for recom in recoms %}
+                <tr>
+                        <td><a href = "{{ recom[0] }}">{{ recom[0] }}</a></td>
+                        <td> {{ recom[1] }} </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
         </table>
         </center>
 </body>

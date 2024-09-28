@@ -240,6 +240,9 @@ class news_del_form(FlaskForm):
 class post_del_form(FlaskForm):
     submit = SubmitField("DELETE POST")
 
+class recom_del_form(FlaskForm):
+    submit = SubmitField("DELETE RECOMMENDATION")
+
 class delete_form(FlaskForm):
     submit = SubmitField("DELETE THIS COMMENT")
 
@@ -858,8 +861,27 @@ def edit_news_fun(news_title):
             return "Not allowed to be here"
     return "Not allowed to be here"
 
+@app.route("/recom_delete/<title>", methods = {"GET", "POST"})
+def recom_delete_fun(title):
+    if "username" in session:
+        if session["username"] == "admin":
+            form = recom_del_form()
+            if form.validate_on_submit():
+                cursor.execute("DELETE FROM recom WHERE http_link = ?;", 
+                (title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":"),))
+                return redirect(url_for("recom_fun"))
+            return render_template("recom_delete.html", form = form)
+        else:
+            return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
+
 @app.route("/recommendations_websites", methods = ("GET", "POST"))
 def recom_fun():
+    auth = False
+    if "username" in session:
+        if session["username"] == "admin":
+            auth = True
     form = recom_form()
     cur_tags = "."
     if form.validate_on_submit():
@@ -868,7 +890,8 @@ def recom_fun():
         cur_tags = r.sub("|", cur_tags)
     cursor.execute("SELECT * FROM recom WHERE tags RLIKE ?;", (cur_tags,))
     result = cursor.fetchall()
-    return render_template("recom.html", recoms = result, form = form)
+    return render_template("recom.html", recoms = result, form = form, auth = auth,
+            rpl_points = app.config["replace_double_points"], rpl_slashes = app.config["replace_slashes"])
 
 @app.route("/add_recom", methods = ("GET", "POST"))
 def add_recom_fun():
