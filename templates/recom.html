@@ -29,6 +29,9 @@
                         <td><a href = "{{ recom[0] }}">{{ recom[0] }}</a></td>
                         <td> {{ recom[1] }} </td>
                         <td> 
+                                <a href = "recom_edit/{{ recom[0].replace(":", rpl_points).replace("//", rpl_slashes) }}">Edit</a>
+                        </td>
+                        <td> 
                                 <a href = "recom_delete/{{ recom[0].replace(":", rpl_points).replace("//", rpl_slashes) }}">Delete</a>
                         </td>
                 </tr>

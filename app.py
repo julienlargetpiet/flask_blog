@@ -243,6 +243,13 @@ class post_del_form(FlaskForm):
 class recom_del_form(FlaskForm):
     submit = SubmitField("DELETE RECOMMENDATION")
 
+class recom_edit_form(FlaskForm):
+    http_link = StringField(validators = [InputRequired()],
+            render_kw = {"placeholder": "http(s) link"})
+    tags = StringField(validators = [InputRequired()],
+            render_kw = {"placeholder": "description / tags"})
+    submit = SubmitField("UPDATE RECOMMENDATION")
+
 class delete_form(FlaskForm):
     submit = SubmitField("DELETE THIS COMMENT")
 
@@ -872,6 +879,24 @@ def recom_delete_fun(title):
                 (title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":"),))
                 return redirect(url_for("recom_fun"))
             return render_template("recom_delete.html", form = form)
+        else:
+            return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
+
+@app.route("/recom_edit/<title>", methods = {"GET", "POST"})
+def recom_edit_fun(title):
+    if "username" in session:
+        cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
+        if session["username"] == "admin" or cursor.fetchall()[0][0]:
+            form = recom_edit_form()
+            if form.validate_on_submit():
+                cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;",  
+                               (form.http_link.data, 
+                                form.tags.data, 
+                                title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")))
+                return redirect(url_for("recom_fun"))
+            return render_template("recom_edit.html", form = form)
         else:
             return "Not allowed to be here"
     else:

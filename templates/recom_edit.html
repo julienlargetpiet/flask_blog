@@ -1,0 +1,25 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+        <title> Delete Recom </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+<body>
+        <a href = "../">Home</a>
+        <br/>
+        <center>
+          <form method = "POST">
+                {{ form.hidden_tag() }} 
+                {{ form.http_link }} 
+                <br/>
+                <br/>
+                {{ form.tags }} 
+                <br/>
+                <br/>
+                {{ form.submit }}
+          </form>
+        </center>
+</body>
