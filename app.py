@@ -33,6 +33,7 @@ app.config["recom_value"] = "Ft56lpqAZ!?lP"
 app.config["MAX_IP_PER_ACCOUNT"] = 15
 app.config["replace_double_points"] = "nvr_here"
 app.config["replace_slashes"] = "NVR_HERE"
+app.config["max_comments_per_day"] = 5
 Session(app)
 
 database_username = "database_username"
@@ -420,7 +421,7 @@ def after_user_ip_fun(user):
                 if session["username"] == "admin":
                     return redirect(url_for("admin_panel"))
                 else:
-                    return redirec(url_for("index"))
+                    return redirect(url_for("index"))
             return render_template("after_user_ip.html", content = result, form = form)
         else:
             return "Not allowed to be here"
@@ -510,9 +511,11 @@ def new_user():
         return "Created too many accounts from the same ip adress"
     form = newuser_form()
     if form.validate_on_submit():
-        cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0);", 
+        cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0, ?);", 
                 (form.username.data, 
-                    generate_password_hash(form.password.data), cur_ip))
+                 generate_password_hash(form.password.data), 
+                 cur_ip,
+                 datetime.datetime.today().strftime("%d")))
         session["username"] = form.username.data
         return render_template("account_created.html")
     return render_template("new_user.html", form = form)
@@ -676,15 +679,52 @@ def comment_page_post_fun(post_title, answer_status, com_id):
             cursor.execute("SELECT COUNT(*) FROM blog_comments;")
             real_id = cursor.fetchall()[0][0] + 1
             if answer_status == "0":
-                cursor.execute("SELECT COUNT(DISTINCT com_id) FROM blog_comments WHERE post_title = ?", (post_title,))
-                com_id = cursor.fetchall()[0][0]
-                com_id += 1
-                cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)", (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
+                if session["username"] != "admin":
+                    cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
+                    if abs(datetime.datetime.today().strftime("%d") - cursor.fetchall()[0][0]) > 0:
+                        cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;",
+                            (session["username"],))
+                    cursor.execute("SELECT max_comments_per_day FROM users WHERE username = ?;", (session["username"],))
+                    rslt = cursor.fetchall()[0][0]
+                    if rslt < app.config["max_comments_per_day"]:
+                        cursor.execute("UPDATE users SET max_comments_per_day = ?;", (rslt + 1,))
+                        cursor.execute("SELECT COUNT(DISTINCT com_id) FROM blog_comments WHERE post_title = ?", (post_title,))
+                        com_id = cursor.fetchall()[0][0]
+                        com_id += 1
+                        cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                                (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
+                        return redirect(url_for("posts_fun", post_title = post_title))
+                    else:
+                        return "Too much comments this day"
+                else:
+                    cursor.execute("SELECT COUNT(DISTINCT com_id) FROM blog_comments WHERE post_title = ?", (post_title,))
+                    com_id = cursor.fetchall()[0][0]
+                    com_id += 1
+                    cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                            (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
+                    return redirect(url_for("posts_fun", post_title = post_title))
             else:
                 cursor.execute("SELECT post_title FROM blog_comments WHERE post_title = ? AND com_id = ?;", (post_title, com_id))
                 cur_res = cursor.fetchall()
                 if len(cur_res) > 0:
-                    cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)", (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
+                    if session["username"] != "admin":
+                        cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
+                        if abs(datetime.datetime.today().strftime("%d") - cursor.fetchall()[0][0]) > 0:
+                            cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;",
+                                (session["username"],))
+                        cursor.execute("SELECT max_comments_per_day FROM users WHERE username = ?;", (session["username"],))
+                        rslt = cursor.fetchall()[0][0]
+                        if rslt < app.config["max_comments_per_day"]:
+                            cursor.execute("UPDATE users SET max_comments_per_day = ?;", (rslt + 1,))
+                            cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                                    (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
+                            return redirect(url_for("posts_fun", post_title = post_title))
+                        else:
+                            return "Too much comments this day"
+                    else:
+                        cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                                    (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
+                        return redirect(url_for("posts_fun", post_title = post_title))
                 else:
                     return "Response to no comment is not allowed"
             r = re.compile(" ")
