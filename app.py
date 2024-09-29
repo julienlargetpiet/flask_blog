@@ -29,7 +29,10 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["UPLOAD_FOLDER"] = "static/files/"
 app.config["allow_com"] = "Ty67:!?sdfs56k"
 app.config["forbid_com"] = "Ft5!Qero56?dl"
+app.config["recom_value"] = "Ft56lpqAZ!?lP"
 app.config["MAX_IP_PER_ACCOUNT"] = 15
+app.config["replace_double_points"] = "nvr_here"
+app.config["replace_slashes"] = "NVR_HERE"
 Session(app)
 
 database_username = "database_username"
@@ -242,13 +245,6 @@ class post_del_form(FlaskForm):
 
 class recom_del_form(FlaskForm):
     submit = SubmitField("DELETE RECOMMENDATION")
-
-class recom_edit_form(FlaskForm):
-    http_link = StringField(validators = [InputRequired()],
-            render_kw = {"placeholder": "http(s) link"})
-    tags = StringField(validators = [InputRequired()],
-            render_kw = {"placeholder": "description / tags"})
-    submit = SubmitField("UPDATE RECOMMENDATION")
 
 class delete_form(FlaskForm):
     submit = SubmitField("DELETE THIS COMMENT")
@@ -889,14 +885,22 @@ def recom_edit_fun(title):
     if "username" in session:
         cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
         if session["username"] == "admin" or cursor.fetchall()[0][0]:
-            form = recom_edit_form()
-            if form.validate_on_submit():
-                cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;",  
-                               (form.http_link.data, 
-                                form.tags.data, 
-                                title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")))
-                return redirect(url_for("recom_fun"))
-            return render_template("recom_edit.html", form = form)
+            cur_http_link = title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")
+            if request.method == "POST":
+                if app.config["recom_value"] in request.form:
+                    cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;",  
+                                   (form.http_link.data, 
+                                    form.tags.data, 
+                                    title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")))
+                    return redirect(url_for("recom_fun"))
+            cursor.execute("SELECT http_link, tags FROM recom WHERE http_link = ?;", (cur_http_link,))
+            http_link = cursor.fetchall()[0]
+            tags = http_link[1]
+            http_link = http_link[0]
+            return render_template("recom_edit.html",
+                    http_link = http_link,
+                    tags = tags,
+                    recom_value = app.config["recom_value"])
         else:
             return "Not allowed to be here"
     else:

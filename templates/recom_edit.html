@@ -11,15 +11,12 @@
         <a href = "../">Home</a>
         <br/>
         <center>
-          <form method = "POST">
-                {{ form.hidden_tag() }} 
-                {{ form.http_link }} 
+        <form method = "POST">
+                <textarea name = "http_link">{{ http_link }}</textarea>
                 <br/>
+                <textarea name = "tags">{{ tags }}</textarea>
                 <br/>
-                {{ form.tags }} 
-                <br/>
-                <br/>
-                {{ form.submit }}
-          </form>
+                <input type = "submit" value = "Submit" name = "{{ recom_value }}">
+        </form>
         </center>
 </body>
