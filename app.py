@@ -586,8 +586,8 @@ def new_post():
     else:
         return "Not allowed to be here"
 
-@app.route("/all_posts/<post_title>", methods = ("POST", "GET"))
-def posts_fun(post_title):
+@app.route("/all_posts/<post_title>+<page>", methods = ("POST", "GET"))
+def posts_fun(post_title, page):
     auth = False
     auth_post = False
     auth_rm_com = False
@@ -623,13 +623,37 @@ def posts_fun(post_title):
     res = cursor.fetchall()[0]
     cursor.execute("SELECT content, date_time, answer_status, com_id, username, real_id, modified FROM blog_comments WHERE post_title = ? ORDER BY com_id;", (post_title,))
     res_comments = cursor.fetchall()
+    page = int(page)
+    if page < 1:
+        page = 1
+    if 20 * (page - 1) < len(res_comments):
+        if page == 1:
+            res_comments = res_comments[0:20]
+        elif page * 20 < len(res_comments):
+            res_comments = res_comments[((page - 1) * 20) + 1:page * 20]
+        else:
+            res_comments = res_comments[((page - 1) * 20) + 1:len(res_comments)]
+    else:
+        res_comments = []
     r = re.compile(" ")
     post_title = r.sub("_", post_title)
     return render_template("post.html",
-            datetime = res[0], title = res[1], content = markdown.markdown(res[2]), post_title = post_title,
-            comments = res_comments, files_names = res[3], auth = auth, form = form, com_status = com_status,
-                           user_name = user_name, modified_post = res[4], auth_post = auth_post, auth_rm_com = auth_rm_com,
-                           id_allow_com = app.config["allow_com"], id_forbid_com = app.config["forbid_com"])
+                           datetime = res[0],
+                           title = res[1],
+                           content = markdown.markdown(res[2]),
+                           post_title = post_title,
+                           comments = res_comments,
+                           files_names = res[3],
+                           auth = auth,
+                           form = form,
+                           com_status = com_status,
+                           user_name = user_name,
+                           modified_post = res[4],
+                           auth_post = auth_post,
+                           auth_rm_com = auth_rm_com,
+                           id_allow_com = app.config["allow_com"],
+                           id_forbid_com = app.config["forbid_com"],
+                           cur_page = page)
 
 @app.route("/delete_com/<real_id>+<post_title>+<com_id>+<com_status>", methods = ("POST", "GET"))
 def delete_fun(real_id, post_title, com_id, com_status):
@@ -1002,7 +1026,7 @@ def edit_com_fun(real_id, post_title):
                         return "Comment not allowed"
                     cursor.execute("UPDATE blog_comments SET content = ?, modified = TRUE WHERE real_id = ?;", 
                                    (request.form["content"], real_id))
-                    return redirect(url_for("posts_fun", post_title = post_title))
+                    return redirect(url_for("posts_fun", post_title = post_title, page = 1))
             return render_template("edit_com.html", content = content, post_title = post_title)
         else:
             return "Not allowed to be here"

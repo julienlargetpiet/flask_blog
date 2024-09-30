@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html lang="en">
 <head>
         <title> Post </title>
@@ -60,28 +60,41 @@
         {% endif %}
         <hr/>
         {% if com_status %}
-        {% for i in comments %}
-                {% if i[2] != 0 %}
-                <a style = "margin-left:1cm; margin-top:.5cm;"><b>{{ i[4] }}</b></a>
-                <div style = "margin-left:1cm;">  {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (modified) {% endif %}</div> 
-                {% if user_name == i[4] %}
-                <a style = "margin-left:1cm;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a><br/>
-                <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
-                {% elif auth or auth_rm_com %}
-                <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
-                {% endif %}
-                <br/> 
-                {% else %}
-                <a style = "margin-top:1.2cm;"><b>{{ i[4] }}</b></a>
-                <div> {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (mofified) {% endif %} </div> 
-                       <div> <a href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </div>
-                       {% if user_name == i[4] %}
-                       <a href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> <br/>
-                       <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
-                       {% elif auth or auth_rm_com %}
-                       <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
-                       {% endif %}
-                {% endif %}
-        {% endfor %}
+          {% if comments %}
+              {% for i in comments %}
+                      {% if i[2] != 0 %}
+                      <a style = "margin-left:1cm; margin-top:.5cm;"><b>{{ i[4] }}</b></a>
+                      <div style = "margin-left:1cm;">  {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (modified) {% endif %}</div>
+                        {% if user_name == i[4] %}
+                        <a style = "margin-left:1cm;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a><br/>
+                        <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
+                        {% elif auth or auth_rm_com %}
+                        <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
+                        <br/> 
+                        {% endif %}
+                      {% else %}
+                      <a style = "margin-top:1.2cm;"><b>{{ i[4] }}</b></a>
+                      <div> {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (mofified) {% endif %} </div> 
+                             <div> <a href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </div>
+                             {% if user_name == i[4] %}
+                             <a href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> <br/>
+                             <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
+                             {% elif auth or auth_rm_com %}
+                             <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
+                             {% endif %}
+                      {% endif %}
+              {% endfor %}
+          {% else %}
+          <p>Not that much comments</p>
+          {% endif %}
+        {% endif %}
+        <br/>
+        <br/>
+        <a href = "{{ post_title }}+{{ cur_page + 1}}">Next</a>
+        <br/>
+        {% if cur_page > 1 %}
+                <a href = "{{ post_title }}+{{ cur_page - 1}}">Before</a>
         {% endif %}
 </body>
+
+
