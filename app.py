@@ -579,7 +579,7 @@ def new_post():
                 cur_time = cur_time[0:(len(cur_time) - 7)]
                 cursor.execute("INSERT INTO posts (date_time, text_content, title, tags, files_name, allow_comments, username) VALUE (?, ?, ?, ?, ?, TRUE, ?);",
                         (cur_time, form.n_post_content.data, form.title.data, form.tags.data, all_files_names, session["username"]))
-                return redirect(url_for("posts_fun", post_title = re.sub(" ", "_", form.title.data)))
+                return redirect(url_for("posts_fun", post_title = re.sub(" ", "_", form.title.data), page = 1))
             return render_template("new_post.html", form = form)
         else:
             return "Not allowed to be here"
@@ -612,10 +612,10 @@ def posts_fun(post_title, page):
     if request.method == "POST":
         if app.config["forbid_com"] in request.form:
             cursor.execute("UPDATE posts SET allow_comments = FALSE WHERE title = ?;", (post_title,))
-            return redirect(url_for("posts_fun", post_title = post_title))
+            return redirect(url_for("posts_fun", post_title = post_title, page = 1))
         if app.config["allow_com"] in request.form:
             cursor.execute("UPDATE posts SET allow_comments = TRUE WHERE title = ?;", (post_title,))
-            return redirect(url_for("posts_fun", post_title = post_title))
+            return redirect(url_for("posts_fun", post_title = post_title, page = 1))
         if form.validate_on_submit():
             cursor.execute("DELETE FROM posts WHERE title = ?;", (post_title,))
             return redirect(url_for("post_search_fun", page = 0))
@@ -673,11 +673,11 @@ def delete_fun(real_id, post_title, com_id, com_status):
                 if com_status == "0":
                     cursor.execute("DELETE FROM blog_comments WHERE com_id = ? AND post_title = ?;", (com_id, post_title))
                     post_title = r.sub("_", post_title)
-                    return redirect(url_for("posts_fun", post_title = post_title))
+                    return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                 else:
                     cursor.execute("DELETE FROM blog_comments WHERE real_id = ?;", (real_id,))
                     post_title = r.sub("_", post_title)
-                    return redirect(url_for("posts_fun", post_title = post_title))
+                    return redirect(url_for("posts_fun", post_title = post_title, page = 1))
             r = re.compile(" ")
             post_title = r.sub("_", post_title)
             return render_template("delete.html", form = form, post_title = post_title)
@@ -717,7 +717,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                         com_id += 1
                         cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
                                 (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
-                        return redirect(url_for("posts_fun", post_title = post_title))
+                        return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                     else:
                         return "Too much comments this day"
                 else:
@@ -726,7 +726,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                     com_id += 1
                     cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
                             (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
-                    return redirect(url_for("posts_fun", post_title = post_title))
+                    return redirect(url_for("posts_fun", post_title = post_title, page = 1))
             else:
                 cursor.execute("SELECT post_title FROM blog_comments WHERE post_title = ? AND com_id = ?;", (post_title, com_id))
                 cur_res = cursor.fetchall()
@@ -742,18 +742,18 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                             cursor.execute("UPDATE users SET max_comments_per_day = ?;", (rslt + 1,))
                             cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
                                     (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
-                            return redirect(url_for("posts_fun", post_title = post_title))
+                            return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                         else:
                             return "Too much comments this day"
                     else:
                         cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
                                     (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
-                        return redirect(url_for("posts_fun", post_title = post_title))
+                        return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                 else:
                     return "Response to no comment is not allowed"
             r = re.compile(" ")
             post_title = r.sub("_", post_title)
-            return redirect(url_for("posts_fun", post_title = post_title))
+            return redirect(url_for("posts_fun", post_title = post_title, page = 1))
         r = re.compile(" ")
         post_title = r.sub("_", post_title)
         return render_template("comment_page_post.html", form = form, post_title = post_title)
@@ -813,7 +813,7 @@ def edit_post_fun(post_title):
                     cursor.execute("UPDATE posts SET modified = TRUE WHERE title = ?;", (post_title,))
                     r = re.compile(" ")
                     post_title = r.sub("_", post_title)
-                    return redirect(url_for("posts_fun", post_title = post_title))
+                    return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                 return render_template("edit_post.html", content = cur_content, post_title = re.sub(" ", "_", post_title))
             else:
                 return "This post does not exist"
