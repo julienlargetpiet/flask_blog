@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html lang="en">
 <head>
         <title> Edit Post </title>
@@ -8,11 +8,15 @@
         <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
 </head>
 <body>
-        <a href = "../../all_posts/{{ post_title }}">Related Post</a>
+        <a href = "../../all_posts/{{ post_title }}+1">Related Post</a>
+        <br/>
+        {{ post_title }}
         <br/>
         <center>
                 <form method = "post">
                         <textarea rows = 45 cols = 65 name="content">{{ content }}</textarea>
+                        <br/>
+                        <br/>
                         <div> <input type = "submit" value= "Submit"> </div>
                 </form>
         </center>
