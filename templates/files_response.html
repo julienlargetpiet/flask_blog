@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title> AllFiles </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <!--        <link rel = "text/javascript" href = "{{url_for('static', filename = 'jquery/jquery-3.7.1.js') }}"/> -->
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+        <a href = "../">Home</a>
+        <br/>
+        <a href = "/see_all_files">Previous</a>
+        <br/>
+        <br/>
+        <center>
+          {{ status }}
+        </center>
+        <br/>
+</body>

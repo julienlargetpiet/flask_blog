@@ -1101,6 +1101,30 @@ def see_privileges():
     else:
         return "Not allowed to be here"
 
+@app.route("/see_all_files", methods = ("POST", "GET"))
+def see_all_files_fun():
+    if "username" in session:
+        if session["username"] == "admin":
+            pre_content = glob("static/files/*")
+            pre_content = [os.path.basename(i) for i in pre_content]
+            content = "<br/>".join(pre_content)
+            if request.method == "POST":
+                if app.config["see_all_files"] in request.form:
+                    cur_file = request.form[app.config["see_all_files"]]
+                    cur_file = os.path.basename(cur_file)
+                    status = False
+                    for i in pre_content:
+                        if cur_file == i:
+                            status = True
+                    return render_template("files_response.html", status = status)
+            return render_template("see_all_files.html",
+                    content = content,
+                    all_files = app.config["see_all_files"])
+        else:
+            return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
+
 if __name__ == "__name__":
     app.run(debug = True, threaded = True)
 

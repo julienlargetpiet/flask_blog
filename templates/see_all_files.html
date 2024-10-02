@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title> AllFiles </title>
+        <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <!--        <link rel = "text/javascript" href = "{{url_for('static', filename = 'jquery/jquery-3.7.1.js') }}"/> -->
+        <meta charset="utf-8"/>
+        <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
+        <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
+</head>
+
+<body>
+        <a href = "../">Home</a>
+        <br/>
+        <br/>
+        <center>
+        Enter the filname you want to see if already uploaded 
+        <br/>
+        <br/>
+        <form method = "POST">
+          <textarea name = "{{ all_files }}"></textarea>
+          <br/>
+          <br/>
+          <input type = "submit"> </input>
+        </form>
+        <br/>
+        <br/>
+        All files uploaded:
+        <br/>
+        <br/>
+        {{ content|safe }} 
+        </center>
+        <br/>
+</body>
