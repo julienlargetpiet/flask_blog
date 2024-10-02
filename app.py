@@ -572,7 +572,7 @@ def new_post():
                                     image2 = Image.new(image.mode, image.size)
                                     image2.putdata(cur_data)
                                     image2.save(cur_filename)
-                                all_files_names = all_files_names[0:len(all_files_names) - 2]
+                        all_files_names = all_files_names[0:len(all_files_names) - 2]
                 if form.tags.data == "":
                     form.tags.data = form.title.data
                 cur_time = str(datetime.datetime.now())
