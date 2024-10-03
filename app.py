@@ -314,6 +314,7 @@ def index():
     auth_post = False
     auth_news = False
     auth_recom = False
+    show_result = False
     user_status = ""
     if "username" in session:
         user_status = session["username"]
