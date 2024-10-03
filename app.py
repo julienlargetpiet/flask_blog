@@ -34,6 +34,8 @@ app.config["MAX_IP_PER_ACCOUNT"] = 15
 app.config["replace_double_points"] = "nvr_here"
 app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
+app.config["see_all_files"] = "ThP34!qsEz"
+app.config["id_content"] = "ThP34!qsEz3"
 Session(app)
 
 database_username = "database_username"
@@ -809,15 +811,14 @@ def edit_post_fun(post_title):
             if len(cur_content) > 0:
                 cur_content = cur_content[0][0]
                 if request.method == "POST":
-                    if "files" in request.files:
+                    if app.config["see_all_files"] in request.files:
                         all_files_names = ""
                         f_info  = file_info()
                         if request.content_length > f_info.max_size:
                             return "File(s) too large"
-                        cur_files = request.files.getlist("files")
+                        cur_files = request.files.getlist(app.config["see_all_files"])
                         if len(cur_files) > 0:
                             for el in cur_files:
-                                print("ok")
                                 if re.search(r"\.", el.filename):
                                     cur_filename = app.config["UPLOAD_FOLDER"] + secure_filename(el.filename)
                                     cnt = ""
@@ -828,7 +829,6 @@ def edit_post_fun(post_title):
                                         cur_filename = app.config["UPLOAD_FOLDER"] + str(cnt) + el.filename
                                     el.save(cur_filename)
                                     all_files_names += str(cnt) + el.filename + ", "
-                                    print(all_files_names)
                                     if magic.from_file(cur_filename, mime = True) in ["image/jpeg", "image/png", "image/jpg",
 "image/gif"]:
                                         image = Image.open(cur_filename)
@@ -837,17 +837,20 @@ def edit_post_fun(post_title):
                                         image2.putdata(cur_data)
                                         image2.save(cur_filename)
                             all_files_names = all_files_names[0:len(all_files_names) - 2]
-                            print(all_files_names)
                             cursor.execute("SELECT files_name FROM posts WHERE title = ?;", (post_title,))
                             all_files_names += ", " + cursor.fetchall()[0][0]
                             cursor.execute("UPDATE posts SET files_name = ? WHERE title = ?;", (all_files_names, post_title))
-                    cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form["content"], post_title
+                    cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form[app.config["id_content"]], post_title
 )
                     cursor.execute("UPDATE posts SET modified = TRUE WHERE title = ?;", (post_title,))
                     r = re.compile(" ")
                     post_title = r.sub("_", post_title)
                     return redirect(url_for("posts_fun", post_title = post_title, page = 1))
-                return render_template("edit_post.html", content = cur_content, post_title = re.sub(" ", "_", post_title))
+                return render_template("edit_post.html",
+                    content = cur_content,
+                    post_title = re.sub(" ", "_", post_title),
+                    id_files = app.config["see_all_files"],
+                    id_content = app.config["id_content"])
             else:
                 return "This post does not exist"
         else:
