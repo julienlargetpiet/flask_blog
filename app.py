@@ -37,6 +37,7 @@ app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
 app.config["see_all_files"] = "ThP34!qsEz"
 app.config["id_content"] = "ThP34!qsEz3"
+app.config["id_recom"] = "Rkf!?ldfp45S"
 Session(app)
 
 database_username = "database_username"
@@ -313,7 +314,6 @@ def index():
     auth_post = False
     auth_news = False
     auth_recom = False
-    show_result = False
     user_status = ""
     if "username" in session:
         user_status = session["username"]
@@ -341,10 +341,10 @@ def index():
             if "username" in session:
                 cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
                 cur_result = cursor.fetchall()
-                if len(cur_result) == 0:
+                if not cur_result[0][0]:
                     show_result = True
-                elif not cur_result[0][0]:
-                    show_result = True
+                else:
+                    show_result = False
             if show_result:
                 cursor.execute("SELECT recommends FROM welcome_page;")
                 nb_rec = cursor.fetchall()[0][0] + 1
@@ -366,13 +366,13 @@ def index():
     if "username" in session:
         cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
         show_result = cursor.fetchall()
-        if len(show_result) == 0:
+        if not show_result[0][0]:
             show_result = True
-        elif not show_result[0][0]:
-            show_result = True
+        else:
+            show_result = False
     return render_template("index.html", description = result, recommends = result2, show_result = show_result, 
             auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
-            auth_recom = auth_recom)
+            auth_recom = auth_recom, cur_recom = app.config["id_recom"])
 
 @app.route("/dump_data", methods = ("POST", "GET"))
 def dump_data():
