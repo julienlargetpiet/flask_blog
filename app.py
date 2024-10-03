@@ -829,8 +829,7 @@ def edit_post_fun(post_title):
                                         cur_filename = app.config["UPLOAD_FOLDER"] + str(cnt) + el.filename
                                     el.save(cur_filename)
                                     all_files_names += str(cnt) + el.filename + ", "
-                                    if magic.from_file(cur_filename, mime = True) in ["image/jpeg", "image/png", "image/jpg",
-"image/gif"]:
+                                    if magic.from_file(cur_filename, mime = True) in ["image/jpeg", "image/png", "image/jpg", "image/gif"]:
                                         image = Image.open(cur_filename)
                                         cur_data = list(image.getdata())
                                         image2 = Image.new(image.mode, image.size)

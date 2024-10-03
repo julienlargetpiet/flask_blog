@@ -16,10 +16,10 @@
         <br/>
         <center>
                 <form method = "post" enctype = "multipart/form-data">
-                        <textarea rows = 45 cols = 65 name="content">{{ content }}</textarea>
+                        <textarea rows = 45 cols = 65 name="{{ id_content }}">{{ content }}</textarea>
                         <br/>
                         <br/>
-                        <input type = "file" name = "files" multiple>
+                        <input type = "file" name = "{{ id_files }}" multiple>
                         <br/>
                         <br/>
                         <div> <input type = "submit" value= "Submit"> </div>
