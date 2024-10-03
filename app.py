@@ -840,8 +840,7 @@ def edit_post_fun(post_title):
                             cursor.execute("SELECT files_name FROM posts WHERE title = ?;", (post_title,))
                             all_files_names += ", " + cursor.fetchall()[0][0]
                             cursor.execute("UPDATE posts SET files_name = ? WHERE title = ?;", (all_files_names, post_title))
-                    cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form[app.config["id_content"]], post_title
-)
+                    cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form[app.config["id_content"]], post_title))
                     cursor.execute("UPDATE posts SET modified = TRUE WHERE title = ?;", (post_title,))
                     r = re.compile(" ")
                     post_title = r.sub("_", post_title)
