@@ -189,9 +189,10 @@ class signin_form(FlaskForm):
         validators.Length(3, 16, message = "Must be between 3 and 16 characters"),
         UsernameCheckSignIn],
         render_kw = {"placeholder": "username", "style": "width: 10ch", "style": "height: 2ch"})
-    password = StringField(validators = [InputRequired(message = "Password required"), 
-        validators.Length(12, 30, message = "Must be between 12 and 30 characters")], 
-            render_kw = {"placeholder": "password"})
+    password = StringField(validators = [InputRequired(message = "Password required"),
+    validators.Length(12, 30, message = "Must be between 12 and 30 characters")],
+    render_kw = {"placeholder": "password", "style": "-webkit-text-security: circle",
+        "type": "text"})
     submit = SubmitField("SIGN IN")
 
 class edit_form(FlaskForm):
