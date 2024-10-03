@@ -984,13 +984,14 @@ def recom_edit_fun(title):
     if "username" in session:
         cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
         if session["username"] == "admin" or cursor.fetchall()[0][0]:
-            cur_http_link = title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")
+            cur_http_link = title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":
+")
             if request.method == "POST":
                 if app.config["recom_value"] in request.form:
-                    cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;",  
-                                   (form.http_link.data, 
-                                    form.tags.data, 
-                                    title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")))
+                    cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;", (
+                        request.form["http_link"], 
+                        request.form["tags"], 
+                        cur_http_link))
                     return redirect(url_for("recom_fun"))
             cursor.execute("SELECT http_link, tags FROM recom WHERE http_link = ?;", (cur_http_link,))
             http_link = cursor.fetchall()[0]
