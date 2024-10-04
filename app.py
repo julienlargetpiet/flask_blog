@@ -354,7 +354,7 @@ def index():
                 cursor.execute("UPDATE welcome_page SET recommends = ?;", (nb_rec,))
                 cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
                 return redirect(url_for("index"))
-        elif request.form["cur_form"] == "Download Database":
+        elif request.form["cur_form"] == "Download\r\nDatabase":
             os.system(f"mysqldump -u {database_username} blog > static/dump_data/database.sql")
             with ZipFile("static/dump_data/database.zip", "w", ZIP_DEFLATED) as zip_obj:
                 zip_obj.write("static/dump_data/database.sql")
