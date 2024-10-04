@@ -3,16 +3,28 @@
 <head>
         <title> SignIn </title>
         <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
+        <!--        <link rel = "text/javascript" href = "{{url_for('static', filename = 'jquery/jquery-3.7.1.js') }}"/> -->
         <meta charset="utf-8"/>
         <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
         <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
 </head>
 
 <body>
-        <a href = "../">Home</a>
+        <div id = "header">
+             <a id = "header3" href = "../../"><span id = "headerSubtitle">HOME</span></a>
+        </div>
+        <div id = "menu" style = "margin-bottom: 1cm"><a href = "../../post_search/0">Blog Feed</a> &nbsp&nbsp 
+                <a href = "../../news_search/0">News Feed</a> &nbsp&nbsp
+                <a href = "../../recommendations_websites">Recommendations Websites</a> 
+                <span class = "right">
+                  <a href = "../../signin">SignIn</a> &nbsp&nbsp
+                  <a href = "../../signout">SignOut</a>
+                  <a href = "../../new_user">Create Account</a>
+                </span>
+        </div> 
         <br/>
         <center>
-                <form method = "post" style = "margin-top: 5cm" autocomplete = "off">
+                <form method = "post" style = "margin-top: 5cm" autocomplete="off">
                         <div style = "margin-top: .5cm"> {{ form.hidden_tag() }} </div>
                         <div style = "margin-top: .5cm"> {{ form.username }} </div>
                         <div style = "margin-top: .5cm"> {{ form.password }} </div>

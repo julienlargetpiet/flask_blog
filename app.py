@@ -338,11 +338,13 @@ def index():
             if result:
                 auth_recom = True
     if request.method == "POST":
-        if request.form["cur_form"] == "Submit":
+        if app.config["id_recom"] in request.form:
             if "username" in session:
                 cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
                 cur_result = cursor.fetchall()
-                if not cur_result[0][0]:
+                if not len(cur_result):
+                    show_result = True
+                elif not cur_result[0][0]:
                     show_result = True
                 else:
                     show_result = False
@@ -352,7 +354,7 @@ def index():
                 cursor.execute("UPDATE welcome_page SET recommends = ?;", (nb_rec,))
                 cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
                 return redirect(url_for("index"))
-        elif request.form["cur_form"] == "Dump":
+        elif request.form["cur_form"] == "Download Database":
             os.system(f"mysqldump -u {database_username} blog > static/dump_data/database.sql")
             with ZipFile("static/dump_data/database.zip", "w", ZIP_DEFLATED) as zip_obj:
                 zip_obj.write("static/dump_data/database.sql")
@@ -367,7 +369,9 @@ def index():
     if "username" in session:
         cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
         show_result = cursor.fetchall()
-        if not show_result[0][0]:
+        if not len(show_result):
+            show_result = True
+        elif not show_result[0][0]:
             show_result = True
         else:
             show_result = False

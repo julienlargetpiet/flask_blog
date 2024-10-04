@@ -9,8 +9,18 @@
 </head>
 
 <body>
-        <a href = "../../">Home</a> <br/>
-        <a href = "../../post_search/0">Blog Feed</a>
+        <div id = "header">
+             <a id = "header3" href = "../../"><span id = "headerSubtitle">HOME</span></a>
+        </div>
+        <div id = "menu" style = "margin-bottom: 1cm"><a href = "../../post_search/0">Blog Feed</a> &nbsp&nbsp 
+            <a href = "../../news_search/0">News Feed</a> &nbsp&nbsp
+            <a href = "../../recommendations_websites">Recommendations Websites</a> 
+            <span class = "right">
+              <a href = "../../signin">SignIn</a> &nbsp&nbsp
+              <a href = "../../signout">SignOut</a>
+              <a href = "../../new_user">Create Account</a>
+            </span>
+        </div> 
         <br/>
         <center>
                 {{ datetime }} <br/>
@@ -20,7 +30,7 @@
                 <b>{{ title }}</b> <br/>
                 {{ content|safe }} <br/>
                 {% if auth %}
-                <a> Files inputed in this post are {{ files_names }} </a>
+                <a> <i>Files inputed in this post are</i> {{ files_names }} </a>
                 {% endif %}
                 <br/>
                 <a href = "../comment_page_post/{{ post_title }}+0+N">Comment</a>
@@ -90,11 +100,14 @@
         {% endif %}
         <br/>
         <br/>
+        <center>
         <a href = "{{ post_title }}+{{ cur_page + 1}}">Next</a>
         <br/>
         {% if cur_page > 1 %}
                 <a href = "{{ post_title }}+{{ cur_page - 1}}">Before</a>
         {% endif %}
+        </center>
+        <br/>
 </body>
 
 
