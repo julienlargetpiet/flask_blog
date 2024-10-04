@@ -524,7 +524,7 @@ def new_user():
                 (form.username.data, 
                  generate_password_hash(form.password.data), 
                  cur_ip,
-                 datetime.datetime.today().strftime("%d")))
+                 int(datetime.datetime.today().strftime("%d"))))
         session["username"] = form.username.data
         return render_template("account_created.html")
     return render_template("new_user.html", form = form)
@@ -714,7 +714,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
             if answer_status == "0":
                 if session["username"] != "admin":
                     cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
-                    if abs(datetime.datetime.today().strftime("%d") - cursor.fetchall()[0][0]) > 0:
+                    if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                         cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;",
                             (session["username"],))
                     cursor.execute("SELECT max_comments_per_day FROM users WHERE username = ?;", (session["username"],))
@@ -742,7 +742,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                 if len(cur_res) > 0:
                     if session["username"] != "admin":
                         cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
-                        if abs(datetime.datetime.today().strftime("%d") - cursor.fetchall()[0][0]) > 0:
+                        if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                             cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;",
                                 (session["username"],))
                         cursor.execute("SELECT max_comments_per_day FROM users WHERE username = ?;", (session["username"],))
