@@ -716,7 +716,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
             real_id = cursor.fetchall()[0][0] + 1
             if answer_status == "0":
                 if session["username"] != "admin":
-                    cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
+                    cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
                     if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                         cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
                                 (session["username"],))
@@ -744,7 +744,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                 cur_res = cursor.fetchall()
                 if len(cur_res) > 0:
                     if session["username"] != "admin":
-                        cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
+                        cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
                         if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                             cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
                                 (session["username"],))
