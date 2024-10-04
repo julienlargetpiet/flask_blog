@@ -145,8 +145,8 @@ h4 {
 	float: left;
 	margin: 0 1px 0 0;
 	padding: 0 0;
-	border-right: 1px dotted #ccc;
-	width: 200px;
+	border-right: 1px solid #646464;
+	width: 120px;
 }
 
 #nav ul {

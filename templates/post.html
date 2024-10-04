@@ -36,63 +36,64 @@
                 <a href = "../comment_page_post/{{ post_title }}+0+N">Comment</a>
         </center>
         <br/>
+        <div style = "margin-left: 2cm;">
         {% if auth_post %}
+                <a href = "../post_edit/{{ post_title }}">Edit post</a> <br/>
+                {% if com_status %}
+                <form method = "post" style = "margin: 0;">
+                        <input name = "{{ id_forbid_com }}" type = "submit" value = "Forbid comments">
+                </form>
+                {% else %}
+                <form method = "post" style = "margin: 0;">
+                        <input name = "{{ id_allow_com }}" type = "submit" value = "Allow comments">
+                </form>
+                {% endif %}
                 <form method = "post">
                {{ form.hidden_tag() }} <br/>
                {{ form.submit }} <br/>
                 </form>
-                <a href = "../post_edit/{{ post_title }}">Edit post</a> <br/>
-                {% if com_status %}
-                <form method = "post">
-                        <input name = "{{ id_forbid_com }}" type = "submit" value = "Forbid comments">
-                </form>
-                {% else %}
-                <form method = "post">
-                        <input name = "{{ id_allow_com }}" type = "submit" value = "Allow comments">
-                </form>
-                {% endif %}
         {% endif %}
         {% if auth %}
-                <form method = "post">
-               {{ form.hidden_tag() }} <br/>
-               {{ form.submit }} <br/>
-                </form>
                 <a href = "../post_edit/{{ post_title }}">Edit post</a> <br/>
                 {% if com_status %}
-                <form method = "post">
+                <form method = "post" style = "margin: 0;">
                         <input name = "{{ id_forbid_com }}" type = "submit" value = "Forbid comments">
                 </form>
                 {% else %}
-                <form method = "post">
+                <form method = "post" style = "margin: 0;">
                         <input name = "{{ id_allow_com }}" type = "submit" value = "Allow comments">
                 </form>
                 {% endif %}
+                <form method = "post">
+               {{ form.hidden_tag() }}
+               {{ form.submit }} <br/>
+                </form>
         {% endif %}
         <hr/>
         {% if com_status %}
           {% if comments %}
               {% for i in comments %}
                       {% if i[2] != 0 %}
-                      <a style = "margin-left:1cm; margin-top:.5cm;"><b>{{ i[4] }}</b></a>
-                      <div style = "margin-left:1cm;">  {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (modified) {% endif %}</div>
-                        {% if user_name == i[4] %}
-                        <a style = "margin-left:1cm;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a><br/>
-                        <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
-                        {% elif auth or auth_rm_com %}
-                        <a style = "margin-left:1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete com</a> <br/> 
-                        <br/> 
-                        {% endif %}
-                      {% else %}
-                      <a style = "margin-top:1.2cm;"><b>{{ i[4] }}</b></a>
-                      <div> {{ i[0]|comment }} - <i> ServerTime: {{ i[1] }} </i> {% if i[6] %} (mofified) {% endif %} </div> 
-                             <div> <a href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </div>
-                             {% if user_name == i[4] %}
-                             <a href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> <br/>
-                             <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
-                             {% elif auth or auth_rm_com %}
-                             <a href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete com</a> <br/> 
-                             {% endif %}
+                      <a style = "margin-left:1cm; margin-top:.5cm;"><i style = "font-size: 14px;">{{ i[4] }} - {{ i[1] }}  {% if i[6] %} (modified) {% endif %} </i></a>
+                      <div style = "margin-left:1cm;">{{ i[0]|comment }}</div>
+                      {% if user_name == i[4] %}
+                      <a style = "margin-left:1cm; font-size: 14px;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a>
+                      <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete</a> <br/> 
+                      {% elif auth or auth_rm_com %}
+                      <a style = "font-size: 14px; margin-left: 1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete</a> <br/> 
                       {% endif %}
+                      {% else %}
+                      <a style = "margin-top:.5cm;"><i style = "font-size: 14px;">{{ i[4] }} - {{ i[1] }}  {% if i[6] %} (modified) {% endif %} </i></a>
+                      <div>{{ i[0]|comment }}</div>
+                      <span> <a style = "font-size: 14px;" href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </span>
+                      {% if user_name == i[4] %}
+                      <a style = "font-size: 14px;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> 
+                      <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete</a> <br/>
+                      {% elif auth or auth_rm_com %}
+                      <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete</a> <br/> 
+                      {% endif %}
+                      {% endif %}
+                      <br/>
               {% endfor %}
           {% else %}
           <p>Not that much comments</p>
@@ -107,6 +108,7 @@
                 <a href = "{{ post_title }}+{{ cur_page - 1}}">Before</a>
         {% endif %}
         </center>
+        </div>
         <br/>
 </body>
 
