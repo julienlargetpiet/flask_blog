@@ -341,13 +341,10 @@ def index():
             if result:
                 auth_recom = True
     if request.method == "POST":
-        print("request")
-        print(request.form)
         if app.config["id_recom"] in request.form:
             if "username" in session:
                 cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
                 cur_result = cursor.fetchall()
-                print(cur_result)
                 if not len(cur_result):
                     show_result = True
                 elif not cur_result[0][0]:
@@ -381,7 +378,6 @@ def index():
             show_result = True
         else:
             show_result = False
-    print("auth_recom: ", auth_recom, show_result, auth)
     return render_template("index.html", description = result, recommends = result2, show_result = show_result, 
             auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
             auth_recom = auth_recom, cur_recom = app.config["id_recom"])
@@ -527,7 +523,6 @@ def new_user():
         return "Created too many accounts from the same ip adress"
     form = newuser_form()
     if form.validate_on_submit():
-        print(cur_ip)
         cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0, ?);", 
                 (form.username.data, 
                     generate_password_hash(form.password.data), 
@@ -681,8 +676,6 @@ def delete_fun(real_id, post_title, com_id, com_status):
         result2 = cursor.fetchall()[0][0]
         cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
         result3 = cursor.fetchall()[0][0]
-        print("result2", result2)
-        print("result3", result3)
         if session["username"] in ["admin", result] or result2 or result3 == session["username"]:
             r = re.compile("_")
             post_title = r.sub(" ", post_title)
@@ -724,7 +717,6 @@ def comment_page_post_fun(post_title, answer_status, com_id):
             if answer_status == "0":
                 if session["username"] != "admin":
                     cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
-                    #print(cursor.fetchall(), session["username"])
                     if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                         cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
                                 (session["username"],))
@@ -1085,7 +1077,6 @@ def edit_passwd(username):
     if session["username"] == username:
         form = edit_password_form()
         if form.validate_on_submit():
-            print("new passord:", form.password.data)
             cursor.execute("UPDATE users SET password = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
             return redirect(url_for("index"))
         return render_template("edit_password.html", form = form)
@@ -1120,7 +1111,6 @@ def rm_add_spe():
                 if len(form.modalities.data):
                     cur_users = form.usernames.data.split(",")
                     for mod in form.modalities.data:
-                        print(mod, type(mod))
                         for usr in cur_users:
                             cursor.execute(f"UPDATE users SET {mod} = FALSE WHERE username = ?;", (usr,))  
                     return redirect(url_for("admin_panel"))
