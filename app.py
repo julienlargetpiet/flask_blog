@@ -5,16 +5,19 @@ import os
 import math
 import random
 import csv
+#import scrypt
 import binascii
 import magic
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
+#from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask import Flask, render_template, request, abort, redirect, send_file, session, url_for, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, widgets, SelectMultipleField
 from wtforms.validators import *
 from flask_session import Session
+#from Crypto.Cipher import AES
 import datetime
 import time
 from markupsafe import Markup
@@ -35,20 +38,24 @@ app.config["MAX_IP_PER_ACCOUNT"] = 15
 app.config["replace_double_points"] = "nvr_here"
 app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
+app.config["max_charac_comments"] = 1000
 app.config["see_all_files"] = "ThP34!qsEz"
 app.config["id_content"] = "ThP34!qsEz3"
-app.config["id_recom"] = "Rkf!?ldfp45S"
+app.config["id_recom"] = "lof45lpZEZa!2"
+app.config["id_database"] = "DkrMP45kp34"
 Session(app)
 
-database_username = "database_username"
+database_username = "kvv"
 params = mariadb.connect(
     user = database_username,
-    password = "database_password",
+    password = "mamaafricadu78",
     host = "localhost",
-    database = "blog",
+    database = "blog_teste",
     autocommit = True
         )
 cursor = params.cursor()
+
+#socketio = SocketIO(app, cors_allowed_origins = "*")
 
 class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label = False)
@@ -173,7 +180,7 @@ class newuser_form(FlaskForm):
         render_kw = {"placeholder": "username", "style": "width: 10ch", "style": "height: 2ch"})
     password = StringField(validators = [InputRequired(message = "Password required"), 
         validators.Length(12, 30, message = "Must be between 12 and 30 characters"), PasswordCheck], 
-                           render_kw = {"placeholder": "password", "style": "-webkit-text-security: circle", "type": "text"})
+        render_kw = {"placeholder": "password"})
     submit = SubmitField("CREATE ACCOUNT")
 
 def UsernameCheckSignIn(form, field):
@@ -191,10 +198,10 @@ class signin_form(FlaskForm):
         validators.Length(3, 16, message = "Must be between 3 and 16 characters"),
         UsernameCheckSignIn],
         render_kw = {"placeholder": "username", "style": "width: 10ch", "style": "height: 2ch"})
-    password = StringField(validators = [InputRequired(message = "Password required"),
-    validators.Length(12, 30, message = "Must be between 12 and 30 characters")],
-    render_kw = {"placeholder": "password", "style": "-webkit-text-security: circle",
-        "type": "text"})
+    password = StringField(validators = [InputRequired(message = "Password required"), 
+        validators.Length(12, 30, message = "Must be between 12 and 30 characters")], 
+        render_kw = {"placeholder": "password", "style": "-webkit-text-security: circle", 
+            "type": "text"})
     submit = SubmitField("SIGN IN")
 
 class edit_form(FlaskForm):
@@ -221,7 +228,8 @@ class new_post_form(FlaskForm):
     submit = SubmitField("POST") 
 
 class comment_form(FlaskForm):
-    content = TextAreaField(validators = [InputRequired(message = "Content Required")],
+    content = TextAreaField(validators = [InputRequired(message = "Content Required"),
+        validators.Length(1, app.config["max_charac_comments"])],
             render_kw = {"placeholder": "comment", "rows": 45, "cols": 65})
     submit = SubmitField("COMMENT")
 
@@ -288,7 +296,7 @@ class edit_password_form(FlaskForm):
 
 class add_spe_form(FlaskForm):
     usernames = StringField(validators = [InputRequired()],
-            render_kw = {"placeholder": "username(s)"})
+            render_kw = {"placeholder": "username(s) - separated by a comma"})
     modalities = MultiCheckboxField("Label", choices = ["allow_post", "allow_news", "allow_rm_com", "allow_user_ban", "allow_recom"], 
             render_kw = {"class": "myUL"}) 
     submit = SubmitField("SUBMIT")
@@ -338,10 +346,13 @@ def index():
             if result:
                 auth_recom = True
     if request.method == "POST":
+        print("request")
+        print(request.form)
         if app.config["id_recom"] in request.form:
             if "username" in session:
                 cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
                 cur_result = cursor.fetchall()
+                print(cur_result)
                 if not len(cur_result):
                     show_result = True
                 elif not cur_result[0][0]:
@@ -355,10 +366,10 @@ def index():
                 cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
                 return redirect(url_for("index"))
         elif request.form["cur_form"] == "Download\r\nDatabase":
-            os.system(f"mysqldump -u {database_username} blog > static/dump_data/database.sql")
-            with ZipFile("static/dump_data/database.zip", "w", ZIP_DEFLATED) as zip_obj:
-                zip_obj.write("static/dump_data/database.sql")
-            return redirect(url_for("dump_data"))
+            os.system(f"mysqldump -u {database_username} blog_teste > static/dump_data/{app.config['id_database']}.sql")
+            with ZipFile(f"static/dump_data/{app.config['id_database']}.zip", "w", ZIP_DEFLATED) as zip_obj:
+                zip_obj.write(f"static/dump_data/{app.config['id_database']}.sql")
+            return redirect(url_for("dump_data")) 
     cursor.execute("SELECT description, recommends FROM welcome_page;")
     result = cursor.fetchall()
     result2 = result[0][1]
@@ -375,6 +386,7 @@ def index():
             show_result = True
         else:
             show_result = False
+    print("auth_recom: ", auth_recom, show_result, auth)
     return render_template("index.html", description = result, recommends = result2, show_result = show_result, 
             auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
             auth_recom = auth_recom, cur_recom = app.config["id_recom"])
@@ -383,7 +395,8 @@ def index():
 def dump_data():
     if "username" in session:
         if session["username"] == "admin":
-            return render_template("dump_data.html") 
+            return render_template("dump_data.html", 
+                    id_database = app.config["id_database"]) 
         else:
             return "Not allowed to be here"
     else:
@@ -398,7 +411,6 @@ def admin_panel():
             return "Not allowed to be here"
     else:
         return "Not allowed to be here"
-
 
 @app.route("/see_user_ip", methods = ("POST", "GET"))
 def see_user_ip_fun():
@@ -520,11 +532,12 @@ def new_user():
         return "Created too many accounts from the same ip adress"
     form = newuser_form()
     if form.validate_on_submit():
+        print(cur_ip)
         cursor.execute("INSERT INTO users VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0, ?);", 
                 (form.username.data, 
-                 generate_password_hash(form.password.data), 
-                 cur_ip,
-                 int(datetime.datetime.today().strftime("%d"))))
+                    generate_password_hash(form.password.data), 
+                    cur_ip, 
+                    datetime.datetime.today().strftime("%d")))
         session["username"] = form.username.data
         return render_template("account_created.html")
     return render_template("new_user.html", form = form)
@@ -561,7 +574,7 @@ def new_post():
                 if "files" in request.files:
                     f_info = file_info()
                     if request.content_length > f_info.max_size:
-                        return "Files too large"
+                        return "File(s) too large"
                     cur_files = request.files.getlist("files")
                     if len(cur_files) > 0:
                         for el in cur_files:
@@ -647,20 +660,20 @@ def posts_fun(post_title, page):
     r = re.compile(" ")
     post_title = r.sub("_", post_title)
     return render_template("post.html",
-                           datetime = res[0],
-                           title = res[1],
-                           content = markdown.markdown(res[2]),
+                           datetime = res[0], 
+                           title = res[1], 
+                           content = markdown.markdown(res[2]), 
                            post_title = post_title,
-                           comments = res_comments,
-                           files_names = res[3],
-                           auth = auth,
-                           form = form,
+                           comments = res_comments, 
+                           files_names = res[3], 
+                           auth = auth, 
+                           form = form, 
                            com_status = com_status,
-                           user_name = user_name,
-                           modified_post = res[4],
-                           auth_post = auth_post,
+                           user_name = user_name, 
+                           modified_post = res[4], 
+                           auth_post = auth_post, 
                            auth_rm_com = auth_rm_com,
-                           id_allow_com = app.config["allow_com"],
+                           id_allow_com = app.config["allow_com"], 
                            id_forbid_com = app.config["forbid_com"],
                            cur_page = page)
 
@@ -673,6 +686,8 @@ def delete_fun(real_id, post_title, com_id, com_status):
         result2 = cursor.fetchall()[0][0]
         cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
         result3 = cursor.fetchall()[0][0]
+        print("result2", result2)
+        print("result3", result3)
         if session["username"] in ["admin", result] or result2 or result3 == session["username"]:
             r = re.compile("_")
             post_title = r.sub(" ", post_title)
@@ -713,18 +728,19 @@ def comment_page_post_fun(post_title, answer_status, com_id):
             real_id = cursor.fetchall()[0][0] + 1
             if answer_status == "0":
                 if session["username"] != "admin":
-                    cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
+                    cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
+                    #print(cursor.fetchall(), session["username"])
                     if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
-                        cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;",
-                            (session["username"],))
+                        cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
+                                (session["username"],))
                     cursor.execute("SELECT max_comments_per_day FROM users WHERE username = ?;", (session["username"],))
-                    rslt = cursor.fetchall()[0][0]
+                    rslt = cursor.fetchall()[0][0] 
                     if rslt < app.config["max_comments_per_day"]:
                         cursor.execute("UPDATE users SET max_comments_per_day = ?;", (rslt + 1,))
                         cursor.execute("SELECT COUNT(DISTINCT com_id) FROM blog_comments WHERE post_title = ?", (post_title,))
                         com_id = cursor.fetchall()[0][0]
                         com_id += 1
-                        cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                        cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)", 
                                 (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
                         return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                     else:
@@ -733,7 +749,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                     cursor.execute("SELECT COUNT(DISTINCT com_id) FROM blog_comments WHERE post_title = ?", (post_title,))
                     com_id = cursor.fetchall()[0][0]
                     com_id += 1
-                    cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                    cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)", 
                             (form.content.data, cur_time, 0, post_title, com_id, session["username"], real_id))
                     return redirect(url_for("posts_fun", post_title = post_title, page = 1))
             else:
@@ -741,22 +757,22 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                 cur_res = cursor.fetchall()
                 if len(cur_res) > 0:
                     if session["username"] != "admin":
-                        cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
+                        cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
                         if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
-                            cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;",
+                            cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
                                 (session["username"],))
                         cursor.execute("SELECT max_comments_per_day FROM users WHERE username = ?;", (session["username"],))
-                        rslt = cursor.fetchall()[0][0]
+                        rslt = cursor.fetchall()[0][0] 
                         if rslt < app.config["max_comments_per_day"]:
                             cursor.execute("UPDATE users SET max_comments_per_day = ?;", (rslt + 1,))
-                            cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
+                            cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)", 
                                     (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
                             return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                         else:
                             return "Too much comments this day"
                     else:
-                        cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)",
-                                    (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
+                        cursor.execute("INSERT INTO blog_comments (content, date_time, answer_status, post_title, com_id, username, real_id) VALUE (?, ?, ?, ?, ?, ?, ?)", 
+                                (form.content.data, cur_time, 1, post_title, com_id, session["username"], real_id))
                         return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                 else:
                     return "Response to no comment is not allowed"
@@ -800,8 +816,7 @@ def post_search_fun(page):
     com_status = all([i[0] for i in com_status])
     if len(result) > 0:
         return render_template("post_search.html", posts = result, page = page, 
-                form = form, title_link = title_link, auth = auth, com_status = com_status, 
-                id_allow_com = app.config["allow_com"], id_forbid_com = app.config["forbid_com"])
+                form = form, title_link = title_link, auth = auth, com_status = com_status)
     elif page == 0:
         return "Not that much posts <a href = '../../'>Home</a>"
     else:
@@ -818,44 +833,45 @@ def edit_post_fun(post_title):
             if len(cur_content) > 0:
                 cur_content = cur_content[0][0]
                 if request.method == "POST":
-                    if app.config["see_all_files"] in request.files:
-                        all_files_names = ""
-                        f_info  = file_info()
-                        if request.content_length > f_info.max_size:
-                            return "File(s) too large"
-                        cur_files = request.files.getlist(app.config["see_all_files"])
-                        if len(cur_files) > 0:
-                            for el in cur_files:
-                                if re.search(r"\.", el.filename):
-                                    cur_filename = app.config["UPLOAD_FOLDER"] + secure_filename(el.filename)
-                                    cnt = ""
-                                    if os.path.exists(cur_filename):
-                                        cnt = 0
-                                        while os.path.exists(app.config["UPLOAD_FOLDER"] + str(cnt) + el.filename):
-                                            cnt += 1
-                                        cur_filename = app.config["UPLOAD_FOLDER"] + str(cnt) + el.filename
-                                    el.save(cur_filename)
-                                    all_files_names += str(cnt) + el.filename + ", "
-                                    if magic.from_file(cur_filename, mime = True) in ["image/jpeg", "image/png", "image/jpg", "image/gif"]:
-                                        image = Image.open(cur_filename)
-                                        cur_data = list(image.getdata())
-                                        image2 = Image.new(image.mode, image.size)
-                                        image2.putdata(cur_data)
-                                        image2.save(cur_filename)
-                            all_files_names = all_files_names[0:len(all_files_names) - 2]
-                            cursor.execute("SELECT files_name FROM posts WHERE title = ?;", (post_title,))
-                            all_files_names += ", " + cursor.fetchall()[0][0]
-                            cursor.execute("UPDATE posts SET files_name = ? WHERE title = ?;", (all_files_names, post_title))
-                    cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form[app.config["id_content"]], post_title))
-                    cursor.execute("UPDATE posts SET modified = TRUE WHERE title = ?;", (post_title,))
-                    r = re.compile(" ")
-                    post_title = r.sub("_", post_title)
-                    return redirect(url_for("posts_fun", post_title = post_title, page = 1))
-                return render_template("edit_post.html",
-                    content = cur_content,
-                    post_title = re.sub(" ", "_", post_title),
-                    id_files = app.config["see_all_files"],
-                    id_content = app.config["id_content"])
+                    if app.config["id_content"] in request.form:
+                        if app.config["see_all_files"] in request.files:
+                            all_files_names = ""
+                            f_info  = file_info()
+                            if request.content_length > f_info.max_size:
+                                return "File(s) too large"
+                            cur_files = request.files.getlist(app.config["see_all_files"])
+                            if len(cur_files) > 0:
+                                for el in cur_files:
+                                    if re.search(r"\.", el.filename):
+                                        cur_filename = app.config["UPLOAD_FOLDER"] + secure_filename(el.filename)
+                                        cnt = ""
+                                        if os.path.exists(cur_filename):
+                                            cnt = 0
+                                            while os.path.exists(app.config["UPLOAD_FOLDER"] + str(cnt) + el.filename):
+                                                cnt += 1
+                                            cur_filename = app.config["UPLOAD_FOLDER"] + str(cnt) + el.filename
+                                        el.save(cur_filename)
+                                        all_files_names += str(cnt) + el.filename + ", "
+                                        if magic.from_file(cur_filename, mime = True) in ["image/jpeg", "image/png", "image/jpg", "image/gif"]:
+                                            image = Image.open(cur_filename)
+                                            cur_data = list(image.getdata())
+                                            image2 = Image.new(image.mode, image.size)
+                                            image2.putdata(cur_data)
+                                            image2.save(cur_filename)
+                                all_files_names = all_files_names[0:len(all_files_names) - 2]
+                                cursor.execute("SELECT files_name FROM posts WHERE title = ?;", (post_title,))
+                                all_files_names += ", " + cursor.fetchall()[0][0]
+                                cursor.execute("UPDATE posts SET files_name = ? WHERE title = ?;", (all_files_names, post_title))
+                        cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form[app.config["id_content"]], post_title))
+                        cursor.execute("UPDATE posts SET modified = TRUE WHERE title = ?;", (post_title,))
+                        r = re.compile(" ")
+                        post_title = r.sub("_", post_title)
+                        return redirect(url_for("posts_fun", post_title = post_title, page = 1))
+                return render_template("edit_post.html", 
+                        content = cur_content, 
+                        post_title = re.sub(" ", "_", post_title),
+                        id_files = app.config["see_all_files"],
+                        id_content = app.config["id_content"])
             else:
                 return "This post does not exist"
         else:
@@ -916,7 +932,6 @@ def new_news_post():
                     if request.content_length > f_info.max_size:
                         return "Files too large"
                     cur_files = request.files.getlist("files")
-                    all_files_names = ""
                     if len(cur_files) > 0:
                         for el in cur_files:
                             if re.search(r"\.", el.filename):
@@ -969,22 +984,6 @@ def edit_news_fun(news_title):
             return "Not allowed to be here"
     return "Not allowed to be here"
 
-@app.route("/recom_delete/<title>", methods = {"GET", "POST"})
-def recom_delete_fun(title):
-    if "username" in session:
-        cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
-        if session["username"] == "admin" or cursor.fetchall()[0][0]:
-            form = recom_del_form()
-            if form.validate_on_submit():
-                cursor.execute("DELETE FROM recom WHERE http_link = ?;", 
-                (title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":"),))
-                return redirect(url_for("recom_fun"))
-            return render_template("recom_delete.html", form = form)
-        else:
-            return "Not allowed to be here"
-    else:
-        return "Not allowed to be here"
-
 @app.route("/recom_edit/<title>", methods = {"GET", "POST"})
 def recom_edit_fun(title):
     if "username" in session:
@@ -993,19 +992,31 @@ def recom_edit_fun(title):
             cur_http_link = title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":")
             if request.method == "POST":
                 if app.config["recom_value"] in request.form:
-                    cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;", (
-                        request.form["http_link"], 
-                        request.form["tags"], 
-                        cur_http_link))
+                    cursor.execute("UPDATE recom set http_link = ?, tags = ? WHERE http_link = ?;", (request.form["http_link"], request.form["tags"], cur_http_link))
                     return redirect(url_for("recom_fun"))
             cursor.execute("SELECT http_link, tags FROM recom WHERE http_link = ?;", (cur_http_link,))
             http_link = cursor.fetchall()[0]
             tags = http_link[1]
             http_link = http_link[0]
-            return render_template("recom_edit.html",
-                    http_link = http_link,
-                    tags = tags,
+            return render_template("recom_edit.html", 
+                    http_link = http_link, 
+                    tags = tags, 
                     recom_value = app.config["recom_value"])
+        else:
+            return "Not allowed to be here"
+    else:
+        return "Not allowed to be here"
+
+@app.route("/recom_delete/<title>", methods = {"GET", "POST"})
+def recom_delete_fun(title):
+    if "username" in session:
+        cursor.execute("SELECT allow_recom FROM users WHERE username = ?;", (session["username"],))
+        if session["username"] == "admin" or cursor.fetchall()[0][0]:
+            form = recom_del_form() 
+            if form.validate_on_submit():
+                cursor.execute("DELETE FROM recom WHERE http_link = ?;", (title.replace(app.config["replace_slashes"], "//").replace(app.config["replace_double_points"], ":"),))
+                return redirect(url_for("recom_fun"))
+            return render_template("recom_delete.html", form = form)
         else:
             return "Not allowed to be here"
     else:
@@ -1026,7 +1037,7 @@ def recom_fun():
         cur_tags = r.sub("|", cur_tags)
     cursor.execute("SELECT * FROM recom WHERE tags RLIKE ?;", (cur_tags,))
     result = cursor.fetchall()
-    return render_template("recom.html", recoms = result, form = form, auth = auth,
+    return render_template("recom.html", recoms = result, form = form, auth = auth, 
             rpl_points = app.config["replace_double_points"], rpl_slashes = app.config["replace_slashes"])
 
 @app.route("/add_recom", methods = ("GET", "POST"))
@@ -1079,6 +1090,7 @@ def edit_passwd(username):
     if session["username"] == username:
         form = edit_password_form()
         if form.validate_on_submit():
+            print("new passord:", form.password.data)
             cursor.execute("UPDATE users SET password = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
             return redirect(url_for("index"))
         return render_template("edit_password.html", form = form)
@@ -1113,6 +1125,7 @@ def rm_add_spe():
                 if len(form.modalities.data):
                     cur_users = form.usernames.data.split(",")
                     for mod in form.modalities.data:
+                        print(mod, type(mod))
                         for usr in cur_users:
                             cursor.execute(f"UPDATE users SET {mod} = FALSE WHERE username = ?;", (usr,))  
                     return redirect(url_for("admin_panel"))
@@ -1154,12 +1167,12 @@ def see_all_files_fun():
                     cur_file = request.form[app.config["see_all_files"]]
                     cur_file = os.path.basename(cur_file)
                     status = False
-                    for i in pre_content:
+                    for i in pre_content: 
                         if cur_file == i:
                             status = True
                     return render_template("files_response.html", status = status)
-            return render_template("see_all_files.html",
-                    content = content,
+            return render_template("see_all_files.html", 
+                    content = content, 
                     all_files = app.config["see_all_files"])
         else:
             return "Not allowed to be here"
@@ -1168,5 +1181,7 @@ def see_all_files_fun():
 
 if __name__ == "__name__":
     app.run(debug = True, threaded = True)
+
+
 
 
