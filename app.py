@@ -5,19 +5,16 @@ import os
 import math
 import random
 import csv
-#import scrypt
 import binascii
 import magic
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
-#from flask_socketio import SocketIO, send, emit, join_room, leave_room
-from flask import Flask, render_template, request, abort, redirect, send_file, session, url_for, jsonify
+from flask import Flask, render_template, request, abort, redirect, send_file, session, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, widgets, SelectMultipleField
 from wtforms.validators import *
 from flask_session import Session
-#from Crypto.Cipher import AES
 import datetime
 import time
 from markupsafe import Markup
@@ -54,8 +51,6 @@ params = mariadb.connect(
     autocommit = True
         )
 cursor = params.cursor()
-
-#socketio = SocketIO(app, cors_allowed_origins = "*")
 
 class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label = False)
