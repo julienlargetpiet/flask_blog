@@ -5,6 +5,7 @@ import os
 import math
 import random
 import csv
+#import scrypt
 import binascii
 import magic
 from werkzeug.utils import secure_filename
@@ -36,9 +37,6 @@ app.config["replace_double_points"] = "nvr_here"
 app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
 app.config["max_charac_comments"] = 1000
-app.config["see_all_files"] = "ThP34!qsEz"
-app.config["id_content"] = "ThP34!qsEz3"
-app.config["id_recom"] = "lof45lpZEZa!2"
 app.config["id_database"] = "DkrMP45kp34"
 Session(app)
 
@@ -47,7 +45,7 @@ params = mariadb.connect(
     user = database_username,
     password = "mamaafricadu78",
     host = "localhost",
-    database = "blog_teste",
+    database = "blog",
     autocommit = True
         )
 cursor = params.cursor()
@@ -341,10 +339,13 @@ def index():
             if result:
                 auth_recom = True
     if request.method == "POST":
-        if app.config["id_recom"] in request.form:
+        print("request")
+        print(request.form)
+        if "id_recom" in request.form:
             if "username" in session:
                 cursor.execute("SELECT answer FROM already WHERE username = ?;", (session["username"],))
                 cur_result = cursor.fetchall()
+                print(cur_result)
                 if not len(cur_result):
                     show_result = True
                 elif not cur_result[0][0]:
@@ -378,9 +379,10 @@ def index():
             show_result = True
         else:
             show_result = False
+    print("auth_recom: ", auth_recom, show_result, auth)
     return render_template("index.html", description = result, recommends = result2, show_result = show_result, 
             auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
-            auth_recom = auth_recom, cur_recom = app.config["id_recom"])
+            auth_recom = auth_recom)
 
 @app.route("/dump_data", methods = ("POST", "GET"))
 def dump_data():
@@ -676,6 +678,8 @@ def delete_fun(real_id, post_title, com_id, com_status):
         result2 = cursor.fetchall()[0][0]
         cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
         result3 = cursor.fetchall()[0][0]
+        print("result2", result2)
+        print("result3", result3)
         if session["username"] in ["admin", result] or result2 or result3 == session["username"]:
             r = re.compile("_")
             post_title = r.sub(" ", post_title)
@@ -716,7 +720,8 @@ def comment_page_post_fun(post_title, answer_status, com_id):
             real_id = cursor.fetchall()[0][0] + 1
             if answer_status == "0":
                 if session["username"] != "admin":
-                    cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
+                    cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
+                    #print(cursor.fetchall(), session["username"])
                     if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                         cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
                                 (session["username"],))
@@ -744,7 +749,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
                 cur_res = cursor.fetchall()
                 if len(cur_res) > 0:
                     if session["username"] != "admin":
-                        cursor.execute("SELECT lst_date FROM users WHERE username = ?;", (session["username"],))
+                        cursor.execute("SELECT teste_date FROM users WHERE username = ?;", (session["username"],))
                         if abs(int(datetime.datetime.today().strftime("%d")) - cursor.fetchall()[0][0]) > 0:
                             cursor.execute("UPDATE users SET max_comments_per_day = 0 WHERE username = ?;", 
                                 (session["username"],))
@@ -820,13 +825,13 @@ def edit_post_fun(post_title):
             if len(cur_content) > 0:
                 cur_content = cur_content[0][0]
                 if request.method == "POST":
-                    if app.config["id_content"] in request.form:
-                        if app.config["see_all_files"] in request.files:
+                    if "id_content" in request.form:
+                        if "see_all_files" in request.files:
                             all_files_names = ""
                             f_info  = file_info()
                             if request.content_length > f_info.max_size:
                                 return "File(s) too large"
-                            cur_files = request.files.getlist(app.config["see_all_files"])
+                            cur_files = request.files.getlist("see_all_files")
                             if len(cur_files) > 0:
                                 for el in cur_files:
                                     if re.search(r"\.", el.filename):
@@ -849,16 +854,14 @@ def edit_post_fun(post_title):
                                 cursor.execute("SELECT files_name FROM posts WHERE title = ?;", (post_title,))
                                 all_files_names += ", " + cursor.fetchall()[0][0]
                                 cursor.execute("UPDATE posts SET files_name = ? WHERE title = ?;", (all_files_names, post_title))
-                        cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form[app.config["id_content"]], post_title))
+                        cursor.execute("UPDATE posts SET text_content = ? WHERE title = ?;", (request.form["id_content"], post_title))
                         cursor.execute("UPDATE posts SET modified = TRUE WHERE title = ?;", (post_title,))
                         r = re.compile(" ")
                         post_title = r.sub("_", post_title)
                         return redirect(url_for("posts_fun", post_title = post_title, page = 1))
                 return render_template("edit_post.html", 
                         content = cur_content, 
-                        post_title = re.sub(" ", "_", post_title),
-                        id_files = app.config["see_all_files"],
-                        id_content = app.config["id_content"])
+                        post_title = re.sub(" ", "_", post_title))
             else:
                 return "This post does not exist"
         else:
@@ -1077,6 +1080,7 @@ def edit_passwd(username):
     if session["username"] == username:
         form = edit_password_form()
         if form.validate_on_submit():
+            print("new passord:", form.password.data)
             cursor.execute("UPDATE users SET password = ? WHERE username = ?;", (generate_password_hash(form.password.data), username))
             return redirect(url_for("index"))
         return render_template("edit_password.html", form = form)
@@ -1111,6 +1115,7 @@ def rm_add_spe():
                 if len(form.modalities.data):
                     cur_users = form.usernames.data.split(",")
                     for mod in form.modalities.data:
+                        print(mod, type(mod))
                         for usr in cur_users:
                             cursor.execute(f"UPDATE users SET {mod} = FALSE WHERE username = ?;", (usr,))  
                     return redirect(url_for("admin_panel"))
@@ -1148,8 +1153,8 @@ def see_all_files_fun():
             pre_content = [os.path.basename(i) for i in pre_content]
             content = "<br/>".join(pre_content)
             if request.method == "POST":
-                if app.config["see_all_files"] in request.form:
-                    cur_file = request.form[app.config["see_all_files"]]
+                if "see_all_files" in request.form:
+                    cur_file = request.form["see_all_files"]
                     cur_file = os.path.basename(cur_file)
                     status = False
                     for i in pre_content: 
@@ -1157,8 +1162,7 @@ def see_all_files_fun():
                             status = True
                     return render_template("files_response.html", status = status)
             return render_template("see_all_files.html", 
-                    content = content, 
-                    all_files = app.config["see_all_files"])
+                    content = content)
         else:
             return "Not allowed to be here"
     else:
