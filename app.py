@@ -24,20 +24,20 @@ from glob import glob
 
 app = Flask(__name__)
 app.static_folder = "static"
-app.config["SECRET_KEY"] = "secret_key"
+app.config["SECRET_KEY"] = "TO_REPLACE1"
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_PERMANENT_LIFETIME"] = 43200
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["UPLOAD_FOLDER"] = "static/files/"
-app.config["allow_com"] = "Ty67:!?sdfs56k"
-app.config["forbid_com"] = "Ft5!Qero56?dl"
-app.config["recom_value"] = "Ft56lpqAZ!?lP"
+app.config["allow_com"] = "TO_REPLACE2"
+app.config["forbid_com"] = "TO_REPLACE3"
+app.config["recom_value"] = "TO_REPLACE4"
 app.config["MAX_IP_PER_ACCOUNT"] = 15
 app.config["replace_double_points"] = "nvr_here"
 app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
 app.config["max_charac_comments"] = 1000
-app.config["id_database"] = "DkrMP45kp34"
+app.config["id_database"] = "TO_REPLACE5"
 Session(app)
 
 database_username = "kvv"
