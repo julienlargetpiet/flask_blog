@@ -74,24 +74,28 @@
           {% if comments %}
               {% for i in comments %}
                       {% if i[2] != 0 %}
-                      <a style = "margin-left:1cm; margin-top:.5cm;"><i style = "font-size: 14px;">{{ i[4] }} - {{ i[1] }}  {% if i[6] %} (modified) {% endif %} </i></a>
-                      <div style = "margin-left:1cm;">{{ i[0]|comment }}</div>
-                      {% if user_name == i[4] %}
-                      <a style = "margin-left:1cm; font-size: 14px;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a>
-                      <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete</a> <br/> 
-                      {% elif auth or auth_rm_com %}
-                      <a style = "font-size: 14px; margin-left: 1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete</a> <br/> 
-                      {% endif %}
+                          <a style = "margin-left:1cm; margin-top:.5cm;"><i style = "font-size: 14px;">{{ i[4] }} - {{ i[1] }}  {% if i[6] %} (modified) {% endif %} </i></a>
+                          <div style = "margin-left:1cm;">{{ i[0]|comment }}</div>
+                          {% if user_name == i[4] %}
+                              <a style = "margin-left:1cm; font-size: 14px;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a>
+                              <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete</a> <br/> 
+                          {% elif auth or auth_rm_com %}
+                                <a style = "font-size: 14px; margin-left: 1cm;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }} + {{ i[2] }}">Delete</a> <br/>
+                          {% else %}
+                            <br/>
+                          {% endif %}
                       {% else %}
-                      <a style = "margin-top:.5cm;"><i style = "font-size: 14px;">{{ i[4] }} - {{ i[1] }}  {% if i[6] %} (modified) {% endif %} </i></a>
-                      <div>{{ i[0]|comment }}</div>
-                      <span> <a style = "font-size: 14px;" href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </span>
-                      {% if user_name == i[4] %}
-                      <a style = "font-size: 14px;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> 
-                      <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete</a> <br/>
-                      {% elif auth or auth_rm_com %}
-                      <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete</a> <br/> 
-                      {% endif %}
+                          <a style = "margin-top:.5cm;"><i style = "font-size: 14px;">{{ i[4] }} - {{ i[1] }}  {% if i[6] %} (modified) {% endif %} </i></a>
+                          <div>{{ i[0]|comment }}</div>
+                          <span> <a style = "font-size: 14px;" href = "../comment_page_post/{{ post_title }}+1+{{ i[3] }}">Respond</a> </span>
+                          {% if user_name == i[4] %}
+                                <a style = "font-size: 14px;" href = "../../edit_com/{{ i[5] }}+{{ post_title }}">Edit</a> 
+                                <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete</a> <br/>
+                          {% elif auth or auth_rm_com %}
+                                <a style = "font-size: 14px;" href="../delete_com/{{ i[5] }}+{{ post_title }}+{{ i[3] }}+{{ i[2] }}">Delete</a> <br/> 
+                          {% else %}
+                              <br/>
+                          {% endif %}
                       {% endif %}
                       <br/>
               {% endfor %}
