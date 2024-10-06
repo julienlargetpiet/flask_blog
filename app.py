@@ -158,12 +158,13 @@ def UsernameCheck(form, field):
     result.append(re.search(r'\[', field.data))
     result.append(re.search(r'\]', field.data))
     result.append(re.search(r',', field.data))
+    if any(result):
+        raise validators.ValidationError("Illegal username")
     with open("banned_usernames.csv", "r", encoding = "utf-8") as csv_file:
         cur_f = csv.reader(csv_file)
         for i in cur_f:
-            result.append(re.search(i[0], field.data))
-    if any(result):
-        raise validators.ValidationError("Illegal username")
+            if re.search(i[0], field.data):
+                raise validators.ValidationError("Illegal username")
  
 class newuser_form(FlaskForm):
     username = StringField(validators = [
