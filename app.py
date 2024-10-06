@@ -24,20 +24,20 @@ from glob import glob
 
 app = Flask(__name__)
 app.static_folder = "static"
-app.config["SECRET_KEY"] = "TO_REPLACE1"
+app.config["SECRET_KEY"] = "to_replace1"
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_PERMANENT_LIFETIME"] = 43200
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["UPLOAD_FOLDER"] = "static/files/"
-app.config["allow_com"] = "TO_REPLACE2"
-app.config["forbid_com"] = "TO_REPLACE3"
-app.config["recom_value"] = "TO_REPLACE4"
+app.config["allow_com"] = "to_replace2"
+app.config["forbid_com"] = "to_replace3"
+app.config["recom_value"] = "to_replace4"
 app.config["MAX_IP_PER_ACCOUNT"] = 15
 app.config["replace_double_points"] = "nvr_here"
 app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
 app.config["max_charac_comments"] = 1000
-app.config["id_database"] = "TO_REPLACE5"
+app.config["id_database"] = "to_replace5"
 Session(app)
 
 database_username = "kvv"
@@ -430,8 +430,8 @@ def after_user_ip_fun(user):
             result = cursor.fetchall()[0][0]
             if form.validate_on_submit():
                 cur_f = open("blacklist.csv", "a") 
-                cur_f.write("\n" + result + ",")
-                cur_f.close
+                cur_f.write("\n" + result)
+                cur_f.close()
                 if session["username"] == "admin":
                     return redirect(url_for("admin_panel"))
                 else:
@@ -448,15 +448,11 @@ def edit_ip_fun():
             if request.method == "POST":
                 cur_f = open("blacklist.csv", "w")
                 cur_f.write(request.form["content"])
-                cur_f.close
+                cur_f.close()
                 return redirect(url_for("admin_panel"))
-            content = ""
             with open("blacklist.csv", "r", encoding = "utf-8") as csv_file:
-                cur_f = csv.reader(csv_file)
-                for i in cur_f:
-                    content += i[0]
-                    content += ",\n"
-            return render_template("edit_ip.html", content = content)
+                cur_f = csv_file.read()
+            return render_template("edit_ip.html", content = cur_f)
         return "Not allowed to be here"
     return "Not allowed to be here"
 
@@ -471,11 +467,8 @@ def comment_filters_fun():
                 return redirect(url_for("admin_panel"))
             content = ""
             with open("filters_com.csv", "r", encoding = "utf-8") as csv_file:
-                cur_f = csv.reader(csv_file)
-                for i in cur_f:
-                    content += i[0]
-                    content += ",\n"
-            return render_template("comments_filters.html", content = content)
+                cur_f = csv_file.read()
+            return render_template("comments_filters.html", content = cur_f)
         return "Not allowed to be here"
     return "Not allowed to be here"
 
@@ -1167,6 +1160,23 @@ def see_all_files_fun():
             return "Not allowed to be here"
     else:
         return "Not allowed to be here"
+
+@app.route("/banning_usernames", methods = {"POST", "GET"})
+def banning_usernames_fun():
+    if "username" in session:
+        cursor.execute("SELECT allow_user_ban FROM users WHERE username = ?;", (session["username"],))
+        content = open("banned_usernames.csv", "r").read()
+        if session["username"] == "admin" or cursor.fetchall()[0][0]:
+            if request.method == "POST":
+                cur_f = open("banned_usernames.csv", "w")
+                cur_f.write(request.form["content"])
+                cur_f.close()
+                return redirect(url_for("admin_panel"))
+            return render_template("banning_usernames.html", content = content)
+        else:
+            return "Not allowed here"
+    else:
+        return "Not allowed here"
 
 if __name__ == "__name__":
     app.run(debug = True, threaded = True)
