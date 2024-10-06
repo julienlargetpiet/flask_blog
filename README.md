@@ -261,7 +261,7 @@ You can see the privileges status of all users by clicking on the related link o
 
 ## About moderation csv
 
-If you already have a csv full of banned usernames, comment filters or ip blacklist, you can import them with the following commands:
+If you already have a csv full of comment filters or ip blacklist, you can import them with the following commands:
 
 `scp csv_files.csv username@ip_of_server:path_to_flask_app/.`
 
