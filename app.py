@@ -488,18 +488,14 @@ def edit():
                     filename = secure_filename(cur_file.filename)
                     cur_path = "static/profile/" + "temp_" + filename
                     cur_file.save(cur_path)
-                    if magic.from_file(cur_path, mime = True) not in ["image/jpeg", "image/png", "image/jpg", "image/gif"]:
-                        os.remove(cur_path)
-                        return "Wrong filetype"
-                    else:
-                        if os.path.exists("static/profile/profile.jpg"):
-                            os.remove("static/profile/profile.jpg")
-                        os.rename(cur_path, "static/profile/profile.jpg")
-                        image = Image.open("static/profile/profile.jpg")
-                        cur_data = list(image.getdata())
-                        image2 = Image.new(image.mode, image.size)
-                        image2.putdata(cur_data)
-                        image2.save("static/profile/profile.jpg")
+                    if os.path.exists("static/profile/profile.jpg"):
+                        os.remove("static/profile/profile.jpg")
+                    os.rename(cur_path, "static/profile/profile.jpg")
+                    image = Image.open("static/profile/profile.jpg")
+                    cur_data = list(image.getdata())
+                    image2 = Image.new(image.mode, image.size)
+                    image2.putdata(cur_data)
+                    image2.save("static/profile/profile.jpg")
                 if "content" in request.form:
                     cursor.execute("UPDATE welcome_page SET description = ?;", (request.form["content"],))
                 return redirect(url_for("index"))
