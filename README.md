@@ -259,6 +259,12 @@ You can **revoke** privileges by clicking on the related link on the administrat
 You can revoke privileges on multiple users once by separating usernames by a comma.
 You can see the privileges status of all users by clicking on the related link on the administration pannel page.
 
+## About moderation csv
+
+If you already have a csv full of banned usernames, comment filters or ip blacklist, you can import them with the following commands:
+
+`scp csv_files.csv username@ip_of_server:path_to_flask_app/.`
+
 # Bash commands used for the README
 
 All the bash command have been used under the bash version **5.2.32**, but should work under all versions.
