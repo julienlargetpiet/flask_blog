@@ -88,6 +88,8 @@ NGINX
 
 ## Git clone
 
+`sudo apt-get update`
+
 `sudo apt-get install git`
 
 In your home directory create a folder containing all the code code base of this application via `git clone https://julienlargetpiet/flask_app`
