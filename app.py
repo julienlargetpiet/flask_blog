@@ -1165,14 +1165,19 @@ def see_all_files_fun():
 def banning_usernames_fun():
     if "username" in session:
         cursor.execute("SELECT allow_user_ban FROM users WHERE username = ?;", (session["username"],))
-        content = open("banned_usernames.csv", "r").read()
         if session["username"] == "admin" or cursor.fetchall()[0][0]:
             if request.method == "POST":
-                cur_f = open("banned_usernames.csv", "w")
-                cur_f.write(request.form["content"])
+                content = request.form["content"]
+                print(repr(content))
+                content = content.split("\r")
+                cur_f = open("banned_usernames.csv", "a")
+                for i in content:
+                    cursor.execute("DELETE FROM users WHERE username = ?;", (i,))
+                    cursor.execute("DELETE FROM blog_comments WHERE username = ?;", (i,))
+                    cur_f.write(i)
                 cur_f.close()
                 return redirect(url_for("admin_panel"))
-            return render_template("banning_usernames.html", content = content)
+            return render_template("banning_usernames.html")
         else:
             return "Not allowed here"
     else:
