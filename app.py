@@ -48,7 +48,7 @@ params = mariadb.connect(
     user = database_username,
     password = "mamaafricadu78",
     host = "localhost",
-    database = "blog",
+    database = "blog_teste",
     autocommit = True
         )
 cursor = params.cursor()
@@ -133,7 +133,7 @@ app.jinja_env.filters['comment'] = comment_filter
 
 class file_info():
     image_size = 3 * 1024 * 1024
-    max_size = 1640 * 1024 * 1024
+    max_size = 164 * 1024 * 1024
 
 def PasswordCheck(form, field):
     if len(re.findall("[?!:;&-()\[\]`#@%$*,{}+=\-/]", field.data)) < 3:
@@ -1181,7 +1181,7 @@ def see_all_files_fun(page):
             if 20 * page < len(pre_content):
                 pre_content = [os.path.basename(i) for i in pre_content[(page - 1) * 20:page * 20]]
             else:
-                pre_content = [os.path.basename(i) for i in pre_content[(page - 1) * 20:(len(pre_content) - 1)]]
+                pre_content = [os.path.basename(i) for i in pre_content[(page - 1) * 20:len(pre_content)]]
             content = "<br/>".join(pre_content)
             if request.method == "POST":
                 if "see_all_files" in request.form:
@@ -1191,7 +1191,15 @@ def see_all_files_fun(page):
                     for i in pre_content: 
                         if cur_file == i:
                             status = True
-                    return render_template("files_response.html", status = status)
+                    return render_template("files_response.html", 
+                            status = status,
+                            cur_f = cur_file)
+                if "DELETE" in request.form:
+                    content_pot = request.form
+                    if bool(content_pot.get("status")):
+                        cur_f = content_pot.get("DELETE")
+                        os.system(f"rm static/files/{cur_f}")
+                        return redirect(url_for("see_all_files_fun", page = str(page)))
             return render_template("see_all_files.html", 
                     content = content, page = page)
         else:
