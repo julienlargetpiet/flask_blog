@@ -38,6 +38,9 @@ app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
 app.config["max_charac_comments"] = 1000
 app.config["id_database"] = "to_replace5"
+app.config["filters_com"] = "to_replace6"
+app.config["banned_usernames"] = "to_replace7"
+app.config["blacklist"] = "to_replace8"
 Session(app)
 
 database_username = "kvv"
@@ -158,9 +161,9 @@ def UsernameCheck(form, field):
     result.append(re.search(r'\[', field.data))
     result.append(re.search(r'\]', field.data))
     result.append(re.search(r',', field.data))
-    if any(result):
+    if any(result): 
         raise validators.ValidationError("Illegal username")
-    with open("banned_usernames.csv", "r", encoding = "utf-8") as csv_file:
+    with open(f"{app.config[banned_usernames]}", "r", encoding = "utf-8") as csv_file:
         cur_f = csv.reader(csv_file)
         for i in cur_f:
             if re.search(i[0], field.data):
@@ -302,7 +305,7 @@ class see_privileges_form(FlaskForm):
 @app.before_request
 def block_method():
     ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
-    with open("blacklist.csv", "r", encoding="UTF-8") as csv_file:
+    with open(f"{app.config['blacklist']}", "r", encoding="UTF-8") as csv_file:
         csv_reader = csv.reader(csv_file)
         for i in csv_reader:
             if i == ip:
@@ -430,7 +433,7 @@ def after_user_ip_fun(user):
             cursor.execute("SELECT ip FROM users WHERE username = ?;", (user,))
             result = cursor.fetchall()[0][0]
             if form.validate_on_submit():
-                cur_f = open("blacklist.csv", "a") 
+                cur_f = open(f"{app.config['blacklist']}", "a") 
                 cur_f.write("\n" + result)
                 cur_f.close()
                 if session["username"] == "admin":
@@ -446,12 +449,26 @@ def after_user_ip_fun(user):
 def edit_ip_fun():
     if "username" in session:
         if session["username"] == "admin":
+            with open(f"{app.config['blacklist']}", "r", encoding = "utf-8") as csv_file:
+                cur_f = csv_file.read()
             if request.method == "POST":
-                cur_f = open("blacklist.csv", "w")
+                cur_f = request.files["file"]
+                cur_f.save(f"static/csvs/{app.config['blacklist']}")
+                return redirect(url_for("admin_panel"))
+            return render_template("are_you_sure_ip.html")
+        return "Not allowed to be here"
+    return "Not allowed to be here"
+
+@app.route("/edit_ip_sure", methods = ("POST", "GET"))
+def edit_ip_sure_fun():
+    if "username" in session:
+        if session["username"] == "admin":
+            if request.method == "POST":
+                cur_f = open(f"{app.config['blacklist']}", "w")
                 cur_f.write(request.form["content"])
                 cur_f.close()
                 return redirect(url_for("admin_panel"))
-            with open("blacklist.csv", "r", encoding = "utf-8") as csv_file:
+            with open(f"{app.config['blacklist']}", "r", encoding = "utf-8") as csv_file:
                 cur_f = csv_file.read()
             return render_template("edit_ip.html", content = cur_f)
         return "Not allowed to be here"
@@ -461,13 +478,29 @@ def edit_ip_fun():
 def comment_filters_fun():
     if "username" in session:
         if session["username"] == "admin":
+            content = ""
+            with open(f"{app.config['filters_com']}", "r", encoding = "utf-8") as csv_file:
+                cur_f = csv_file.read()
+            if cur_f.count("\n") > 3:
             if request.method == "POST":
-                cur_f = open("filters_com.csv", "w")
+                cur_f = request.files["file"]
+                cur_f.save(f"static/csvs/{app.config['filters_com']}")
+                return redirect(url_for("admin_panel"))
+            return render_template("are_you_sure_comments.html")
+        return "Not allowed to be here"
+    return "Not allowed to be here"
+
+@app.route("/comment_filters_sure", methods = ("POST", "GET"))
+def comment_filters_sure_fun():
+    if "username" in session:
+        if session["username"] == "admin":
+            if request.method == "POST":
+                cur_f = open(f"{app.config['filters_com']}", "w")
                 cur_f.write(str(request.form["content"]))
                 cur_f.close()
                 return redirect(url_for("admin_panel"))
             content = ""
-            with open("filters_com.csv", "r", encoding = "utf-8") as csv_file:
+            with open(f"{app.config['filters_com']}", "r", encoding = "utf-8") as csv_file:
                 cur_f = csv_file.read()
             return render_template("comments_filters.html", content = cur_f)
         return "Not allowed to be here"
@@ -477,7 +510,6 @@ def comment_filters_fun():
 def edit():
     if "username" in session:
         if session["username"] == "admin":
-            #form = edit_form()
             cursor.execute("SELECT description FROM welcome_page;")
             result = cursor.fetchall()[0][0]
             if request.method == "POST":
@@ -489,14 +521,18 @@ def edit():
                     filename = secure_filename(cur_file.filename)
                     cur_path = "static/profile/" + "temp_" + filename
                     cur_file.save(cur_path)
-                    if os.path.exists("static/profile/profile.jpg"):
-                        os.remove("static/profile/profile.jpg")
-                    os.rename(cur_path, "static/profile/profile.jpg")
-                    image = Image.open("static/profile/profile.jpg")
-                    cur_data = list(image.getdata())
-                    image2 = Image.new(image.mode, image.size)
-                    image2.putdata(cur_data)
-                    image2.save("static/profile/profile.jpg")
+                    if magic.from_file(cur_path, mime = True) not in ["image/jpeg", "image/png", "image/jpg", "image/gif"]:
+                        os.remove(cur_path)
+                        return "Wrong filetype"
+                    else:
+                        if os.path.exists("static/profile/profile.jpg"):
+                            os.remove("static/profile/profile.jpg")
+                        os.rename(cur_path, "static/profile/profile.jpg")
+                        image = Image.open("static/profile/profile.jpg")
+                        cur_data = list(image.getdata())
+                        image2 = Image.new(image.mode, image.size)
+                        image2.putdata(cur_data)
+                        image2.save("static/profile/profile.jpg")
                 if "content" in request.form:
                     cursor.execute("UPDATE welcome_page SET description = ?;", (request.form["content"],))
                 return redirect(url_for("index"))
@@ -698,7 +734,7 @@ def comment_page_post_fun(post_title, answer_status, com_id):
         form = comment_form()
         if form.validate_on_submit():
             result = []
-            with open("filters_com.csv", "r", encoding= "utf-8") as csv_file:
+            with open(f"{app.config['filters_com']}", "r", encoding= "utf-8") as csv_file:
                 cur_f = csv.reader(csv_file)
                 for i in cur_f:
                     result.append(re.search(i[0], form.content.data))
@@ -1050,7 +1086,7 @@ def edit_com_fun(real_id, post_title):
             if request.method == "POST":
                 if "content" in request.form:
                     result = []
-                    with open("filters_com.csv", "r", encoding= "utf-8") as csv_file:
+                    with open(f"{app.config['filters_com']}", "r", encoding= "utf-8") as csv_file:
                         cur_f = csv.reader(csv_file)
                         for i in cur_f:
                             result.append(re.search(i[0], request.form["content"]))
@@ -1135,12 +1171,16 @@ def see_privileges():
     else:
         return "Not allowed to be here"
 
-@app.route("/see_all_files", methods = ("POST", "GET"))
-def see_all_files_fun():
+@app.route("/see_all_files/<page>", methods = ("POST", "GET"))
+def see_all_files_fun(page):
+    page = int(page)
     if "username" in session:
         if session["username"] == "admin":
             pre_content = glob("static/files/*")
-            pre_content = [os.path.basename(i) for i in pre_content]
+            if 20 * page < len(pre_content):
+                pre_content = [os.path.basename(i) for i in pre_content[(page - 1) * 20:page * 20]]
+            else:
+                pre_content = [os.path.basename(i) for i in pre_content[(page - 1) * 20:(len(pre_content) - 1)]]
             content = "<br/>".join(pre_content)
             if request.method == "POST":
                 if "see_all_files" in request.form:
@@ -1152,7 +1192,7 @@ def see_all_files_fun():
                             status = True
                     return render_template("files_response.html", status = status)
             return render_template("see_all_files.html", 
-                    content = content)
+                    content = content, page = page)
         else:
             return "Not allowed to be here"
     else:
@@ -1167,7 +1207,7 @@ def banning_usernames_fun():
                 content = request.form["content"]
                 print(repr(content))
                 content = content.split("\r")
-                cur_f = open("banned_usernames.csv", "a")
+                cur_f = open(f"{app.config[banned_usernames]}", "a")
                 for i in content:
                     cursor.execute("DELETE FROM users WHERE username = ?;", (i,))
                     cursor.execute("DELETE FROM blog_comments WHERE username = ?;", (i,))

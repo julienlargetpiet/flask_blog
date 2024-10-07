@@ -1,9 +1,8 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html lang="en">
 <head>
-        <title> AllFiles </title>
+        <title> Post </title>
         <link rel = "stylesheet" href = "{{url_for('static', filename = 'css/style.css') }}"/>
-        <!--        <link rel = "text/javascript" href = "{{url_for('static', filename = 'jquery/jquery-3.7.1.js') }}"/> -->
         <meta charset="utf-8"/>
         <meta name="keywords" content="Larget-Piet Julien Blog, Dev, Data"/>
         <link rel="icon" href = "{{url_for('static', filename = 'ico/ico.png')}}"/>
@@ -23,29 +22,17 @@
             </span>
         </div> 
         <br/>
-        <br/>
         <center>
-        Enter the filname you want to see if already uploaded 
+          <p> You are about to load all blacklisted ip addresses </p>
+          <p> You can always copy your csvs of blacklisted ip addresses in the location of your flask_blog on your server directly </p>
+          <a href = "../static/csvs/filters_com.csv" download>blacklist.csv</a> <br/> <br/>
+          <form method = "post" enctype = "multipart/form-data">
+                  <input type = "file" name = "file"> <br/>
+                  <input type = "submit" value = "Upload blacklist.csv">
+          </form> <br/>
+          <a href = "../edit_ip_sure">Manually edit</a>
+        </center>
+        </div>
         <br/>
-        <br/>
-        <form method = "POST">
-          <textarea name = "all_files"></textarea>
-          <br/>
-          <br/>
-          <input type = "submit"> </input>
-        </form>
-        <br/>
-        <br/>
-        All files uploaded:
-        <br/>
-        <br/>
-        {{ content|safe }} 
-        <br/>
-        <br/>
-        <a href = "{{ page + 1 }}">Next</a>
-        <br/>
-        {% if page > 1 %}
-        <a href = "{{ page - 1 }}">Previous</a>
-        {% endif %}
-        <center>
 </body>
+
