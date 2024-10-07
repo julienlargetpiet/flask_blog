@@ -133,7 +133,7 @@ app.jinja_env.filters['comment'] = comment_filter
 
 class file_info():
     image_size = 3 * 1024 * 1024
-    max_size = 164 * 1024 * 1024
+    max_size = 1640 * 1024 * 1024
 
 def PasswordCheck(form, field):
     if len(re.findall("[?!:;&-()\[\]`#@%$*,{}+=\-/]", field.data)) < 3:
