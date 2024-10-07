@@ -38,9 +38,9 @@ app.config["replace_slashes"] = "NVR_HERE"
 app.config["max_comments_per_day"] = 5
 app.config["max_charac_comments"] = 1000
 app.config["id_database"] = "to_replace5"
-app.config["filters_com"] = "to_replace6"
-app.config["banned_usernames"] = "to_replace7"
-app.config["blacklist"] = "to_replace8"
+app.config["filters_com"] = "static/csvs/to_replace6"
+app.config["banned_usernames"] = "static/csvs/to_replace7"
+app.config["blacklist"] = "static/csvs/to_replace8"
 Session(app)
 
 database_username = "kvv"
@@ -481,7 +481,6 @@ def comment_filters_fun():
             content = ""
             with open(f"{app.config['filters_com']}", "r", encoding = "utf-8") as csv_file:
                 cur_f = csv_file.read()
-            if cur_f.count("\n") > 3:
             if request.method == "POST":
                 cur_f = request.files["file"]
                 cur_f.save(f"static/csvs/{app.config['filters_com']}")
