@@ -3,6 +3,7 @@ server {
     access_log path_you_want/access.log;
     listen 80;
     server_name domain_names;
+    client_max_body_size 800m;
 
     location / {
         proxy_pass http://localhost:8000;
