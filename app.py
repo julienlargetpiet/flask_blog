@@ -1171,7 +1171,7 @@ def banning_usernames_fun():
                 for i in content:
                     cursor.execute("DELETE FROM users WHERE username = ?;", (i,))
                     cursor.execute("DELETE FROM blog_comments WHERE username = ?;", (i,))
-                    cur_f.write(i)
+                    cur_f.write("\n" + i)
                 cur_f.close()
                 return redirect(url_for("admin_panel"))
             return render_template("banning_usernames.html")
