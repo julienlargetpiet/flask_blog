@@ -10,13 +10,30 @@
 </head>
 
 <body>
-        <a href = "../">Home</a>
-        <br/>
-        <a href = "/see_all_files">Previous</a>
+        <div id = "header">
+             <a id = "header3" href = "../../"><span id = "headerSubtitle">HOME</span></a>
+        </div>
+        <div id = "menu" style = "margin-bottom: 1cm"><a href = "../../post_search/0">Blog Feed</a> &nbsp&nbsp 
+            <a href = "../../news_search/0">News Feed</a> &nbsp&nbsp
+            <a href = "../../recommendations_websites">Recommendations Websites</a> 
+            <span class = "right">
+              <a href = "../../signin">SignIn</a> &nbsp&nbsp
+              <a href = "../../signout">SignOut</a>
+              <a href = "../../new_user">Create Account</a>
+            </span>
+        </div> 
         <br/>
         <br/>
         <center>
           {{ status }}
-        </center>
         <br/>
+        <br/>
+        {% if status %}
+        <form method = "POST">
+                <input name = "status" value = "{{ status }}" style = "display: none;">
+                <input value = "{{ cur_f }}" name = "DELETE" style = "display: none;">
+                <button type = "submit">Delete {{ cur_f }}</button>
+        </form>
+        {% endif %}
+        </center>
 </body>
