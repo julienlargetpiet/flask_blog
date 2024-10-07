@@ -453,9 +453,10 @@ def edit_ip_fun():
                 cur_f = csv_file.read()
             if request.method == "POST":
                 cur_f = request.files["file"]
-                cur_f.save(f"static/csvs/{app.config['blacklist']}")
+                cur_f.save(f"{app.config['blacklist']}")
                 return redirect(url_for("admin_panel"))
-            return render_template("are_you_sure_ip.html")
+            return render_template("are_you_sure_ip.html", 
+                                   blacklist = app.config["blacklist"])
         return "Not allowed to be here"
     return "Not allowed to be here"
 
@@ -483,9 +484,10 @@ def comment_filters_fun():
                 cur_f = csv_file.read()
             if request.method == "POST":
                 cur_f = request.files["file"]
-                cur_f.save(f"static/csvs/{app.config['filters_com']}")
+                cur_f.save(f"{app.config['filters_com']}")
                 return redirect(url_for("admin_panel"))
-            return render_template("are_you_sure_comments.html")
+            return render_template("are_you_sure_comments.html", 
+                                   filters_com = app.config["filters_com"])
         return "Not allowed to be here"
     return "Not allowed to be here"
 
