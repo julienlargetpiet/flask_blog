@@ -703,7 +703,7 @@ def delete_fun(real_id, post_title, com_id, com_status):
         result = cursor.fetchall()[0][0]
         cursor.execute("SELECT allow_rm_com FROM users WHERE username = ?;", (session["username"],))
         result2 = cursor.fetchall()[0][0]
-        cursor.execute("SELECT username FROM posts WHERE title = ?;", (post_title,))
+        cursor.execute("SELECT username FROM posts WHERE title = ?;", (re.sub("_", " ", post_title),))
         result3 = cursor.fetchall()[0][0]
         print("result2", result2)
         print("result3", result3)
@@ -1223,7 +1223,7 @@ def banning_usernames_fun():
                 content = request.form["content"]
                 print(repr(content))
                 content = content.split("\r")
-                cur_f = open(f"{app.config[banned_usernames]}", "a")
+                cur_f = open(f"{app.config['banned_usernames']}", "a")
                 for i in content:
                     cursor.execute("DELETE FROM users WHERE username = ?;", (i,))
                     cursor.execute("DELETE FROM blog_comments WHERE username = ?;", (i,))
