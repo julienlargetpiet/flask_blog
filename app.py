@@ -834,8 +834,15 @@ def post_search_fun(page):
     com_status = cursor.fetchall()
     com_status = all([i[0] for i in com_status])
     if len(result) > 0:
-        return render_template("post_search.html", posts = result, page = page, 
-                form = form, title_link = title_link, auth = auth, com_status = com_status)
+        return render_template("post_search.html", 
+                               posts = result, 
+                               page = page, 
+                               form = form, 
+                               title_link = title_link, 
+                               auth = auth, 
+                               com_status = com_status,
+                               id_allow_com = app.config["allow_com"],
+                               id_forbid_com = app.config["forbid_com"])
     elif page == 0:
         return "Not that much posts <a href = '../../'>Home</a>"
     else:
