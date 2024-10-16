@@ -1088,7 +1088,7 @@ def edit_com_fun(real_id, post_title):
             result = result[0][0]
         else:
             return "This comment does not exist"
-        if session["username"] in ["admin", result]:
+        if session["username"] == result:
             cursor.execute("SELECT content FROM blog_comments WHERE real_id = ?;", (real_id,))
             content = cursor.fetchall()[0][0]
             if request.method == "POST":
