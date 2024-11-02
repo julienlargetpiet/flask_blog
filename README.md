@@ -269,6 +269,25 @@ If you already have a csv full of comment filters or ip blacklist, you can impor
 
 All the bash command have been used under the bash version **5.2.32**, but should work under all versions.
 
+# Advices
+
+
+In `/etc/my.cnf`,
+
+You can increase the `innodb_log_file_size` and `max_allowed_packet`, if your database is ready to handle multiple requests.
+
+Examples:
+
+
+`[mysqld]
+innodb_log_file_size=128MB
+max_allowed_packet=128M`
+
+
+
+
+
+
 
 
 
