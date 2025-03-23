@@ -163,7 +163,7 @@ def UsernameCheck(form, field):
     result.append(re.search(r',', field.data))
     if any(result): 
         raise validators.ValidationError("Illegal username")
-    with open(f"{app.config[banned_usernames]}", "r", encoding = "utf-8") as csv_file:
+    with open(f"{app.config['banned_usernames']}", "r", encoding = "utf-8") as csv_file:
         cur_f = csv.reader(csv_file)
         for i in cur_f:
             if re.search(i[0], field.data):
