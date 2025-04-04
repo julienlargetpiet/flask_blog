@@ -22,7 +22,7 @@
             </span>
         </div> 
         <br/>
-        <center>
+        <div style="margin-left:45px;">
                 {{ datetime }} <br/>
                 {% if modified_post %}
                 <p>(modified)</p> <br/>
@@ -34,7 +34,7 @@
                 {% endif %}
                 <br/>
                 <a href = "../comment_page_post/{{ post_title }}+0+N">Comment</a>
-        </center>
+        </div>
         <br/>
         <div style = "margin-left: 2cm;">
         {% if auth_post %}
