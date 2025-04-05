@@ -38,6 +38,12 @@ div.container {
 
 }
 
+
+div.dboxes { display: flex;
+ gap: 25px;
+ align-items: flex-start;
+ box-sizing: border-box; }
+
 ul.myUL {
 
         display: inline-block;
