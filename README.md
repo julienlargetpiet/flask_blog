@@ -141,7 +141,6 @@ From a bash shell run the following,
 
 `python3 admin_password.py strong_password`
 
-
 `mariadb -u database_username -p blog < start.sql`
 
 The configuration file is located at `deployment_files/my.cnf`
@@ -155,6 +154,14 @@ Last, in `app.py`, at row 35:
 Change the value of `database_username` to your chosen username.
 
 Also, change the string "database_password" to your real pasword for the database, at row 38. 
+
+### Save the database
+
+`$ mysqldump blog > data.sql`
+
+Now, you can: 
+
+`$ scp data.sql your_server@your_server:path`
 
 ## VPS configuration (Debian 11)
 
