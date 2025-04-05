@@ -362,11 +362,11 @@ def index():
                 cursor.execute("UPDATE welcome_page SET recommends = ?;", (nb_rec,))
                 cursor.execute("INSERT INTO already (username, answer) VALUE (?, TRUE);", (session["username"],))
                 return redirect(url_for("index"))
-        elif request.form["cur_form"] == "Download\r\nDatabase":
-            os.system(f"mysqldump blog > static/dump_data/{app.config['id_database']}.sql")
-            with ZipFile(f"static/dump_data/{app.config['id_database']}.zip", "w", ZIP_DEFLATED) as zip_obj:
-                zip_obj.write(f"static/dump_data/{app.config['id_database']}.sql")
-            return redirect(url_for("dump_data")) 
+        #elif request.form["cur_form"] == "Download\r\nDatabase":
+        #    os.system(f"mysqldump blog > static/dump_data/{app.config['id_database']}.sql")
+        #    with ZipFile(f"static/dump_data/{app.config['id_database']}.zip", "w", ZIP_DEFLATED) as zip_obj:
+        #        zip_obj.write(f"static/dump_data/{app.config['id_database']}.sql")
+        #    return redirect(url_for("dump_data")) 
     cursor.execute("SELECT description, recommends FROM welcome_page;")
     result = cursor.fetchall()
     result2 = result[0][1]
@@ -388,16 +388,16 @@ def index():
             auth = auth, user_co = user_status, auth_ip = auth_ip, auth_post = auth_post, auth_news = auth_news,
             auth_recom = auth_recom)
 
-@app.route("/dump_data", methods = ("POST", "GET"))
-def dump_data():
-    if "username" in session:
-        if session["username"] == "admin":
-            return render_template("dump_data.html", 
-                    id_database = app.config["id_database"]) 
-        else:
-            return "Not allowed to be here"
-    else:
-        return "Not allowed to be here"
+#@app.route("/dump_data", methods = ("POST", "GET"))
+#def dump_data():
+#    if "username" in session:
+#        if session["username"] == "admin":
+#            return render_template("dump_data.html", 
+#                    id_database = app.config["id_database"]) 
+#        else:
+#            return "Not allowed to be here"
+#    else:
+#        return "Not allowed to be here"
 
 @app.route("/admin_panel", methods = ("POST", "GET"))
 def admin_panel():
