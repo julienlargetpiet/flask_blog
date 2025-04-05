@@ -144,9 +144,7 @@ From a bash shell run the following,
 
 `mariadb -u database_username -p blog < start.sql`
 
-Also make sure to create one of the files for `mysqldump` command line password that is used in the blog.
-
-The file is located at `deployment_files/my.cnf`
+The configuration file is located at `deployment_files/my.cnf`
 
 Before copying it, make sure to change the database_password in this file.
 
