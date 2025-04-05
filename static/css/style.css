@@ -44,6 +44,13 @@ div.dboxes { display: flex;
  align-items: flex-start;
  box-sizing: border-box; }
 
+div.Divb { overflow-y: scroll;
+position: sticky;
+max-height: 700px;
+border-radius: 10px;
+top: 10px;
+text-align: left; }
+
 ul.myUL {
 
         display: inline-block;
