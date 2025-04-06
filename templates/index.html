@@ -60,9 +60,9 @@
                 <li>
                 <a href = "edit_password/{{ user_co }}">Change Password</a>
                 </li>
+                {% endif %}
               </ul>
             </div>
-            <center>
             {% if show_result %}
                 <form method = "post" action="" id = "todo-form">
                         <div id = "button"> <input type = "submit" value = "Recommend&#10Website" name="id_recom"> </div>
@@ -71,5 +71,4 @@
             <div style = "margin-top: .5cm; margin-bottom: .5cm"> {{description|safe}} </div>
             <br/>
             <br/>
-            </center>
 </body>
