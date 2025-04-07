@@ -168,7 +168,7 @@ h4 {
 	float: left;
 	margin: 0 1px 0 0;
 	padding: 0 0;
-	border-right: 1px solid #646464;
+	border-right: 1px solid transparent;
 	width: 120px;
 }
 
