@@ -231,7 +231,7 @@ class comment_form(FlaskForm):
     submit = SubmitField("COMMENT")
 
 class post_search_form(FlaskForm):
-    content = StringField(render_kw = {"placeholder": "Search tags"})
+    content = StringField(render_kw = {"placeholder": "Search tags", "style": "background-color:#252627;color:#ffffff;"})
     submit = SubmitField("SEARCH")
 
 def TitleValidationPostNews(form, field):
@@ -276,7 +276,7 @@ class after_ip_form(FlaskForm):
     submit = SubmitField("IP BAN")
 
 class recom_form(FlaskForm):
-    content = StringField(render_kw = {"placeholder": "search tags"})
+    content = StringField(render_kw = {"placeholder": "search tags", "style": "background-color:#252627;color:#ffffff;"})
     submit = SubmitField("SEARCH")
 
 class add_recom_form(FlaskForm):
